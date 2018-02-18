@@ -2,7 +2,7 @@
 layout: post
 title: Python Decorators From the Ground Up
 tags: [python]
-permalink: python-decorators-from-the-ground-up
+permalink: python-decorators-from-the-ground-up/
 comments: true
 ---
 
