@@ -18,7 +18,7 @@ He got a little daughter some years ago, this Terra a couple of weeks old:
 
 ![doggy](/assets/img/terra.jpeg "terra")
 
-Feel free to hit me up in case you need more newfie pictures or wanna chat about stuff. Alternatively, you can meet me personally at Munich's local C++ user group.
+Feel free to hit me up in case you need more newfie pictures or wanna chat about stuff. Alternatively, you can meet me personally at Munich's local [C++ user group](https://www.meetup.com/MUCplusplus/).
 
 And btw I use Arch Linux.
 
