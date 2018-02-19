@@ -5,7 +5,7 @@ comments: true
 tags: [cmake,cpp]
 ---
 
-Not so long ago I got the task of rethinking our build system. The idea was to evaluate existing components, dependencies, but most importantly, to establish a superior design by making use of modern CMake features and paradigms. Most people I know would have avoided such enterprise at all costs, but there is something about writing find modules that makes my brain release endorphins. I thought I was up an amusing ride. Boy was I wrong.
+Not so long ago I got the task of rethinking our build system. The idea was to evaluate existing components, dependencies, but most importantly, to establish a superior design by making use of modern CMake features and paradigms. Most people I know would have avoided such enterprise at all costs, but there is something about writing find modules that makes my brain release endorphins. I thought I was up for an amusing ride. Boy was I wrong.
 
 My excitement was soon shattered after discovering the lack of standard practices in CMake usage and specially the insufficient adoption of modern design patterns. This post explores the concepts of what is known as modern CMake, which advocates for abandoning a traditional variable-based approach for a more structured model based on so-called targets. My intention is to show how "new" (>= 3.0.0) features can be employed to reshape your CMake system into a more maintainable and intuitive alternative that actually make sense. 
 
