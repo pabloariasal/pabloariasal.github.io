@@ -9,7 +9,7 @@ author1:
   # Used at the bottom of each page and at the top of the `about` layout
   # Markdown enabled, can use multiple paragraphs (enabled by `|`)
   about:             |
-      Hola! My name is Pablo and I am a software engineer currently living in Munich, Germany. My first line of code was written 12 years ago while attempting to customize an add-on for my World of Warcraft UI in Lua. A passion for programming has been grown in me ever since and now, at 26 years old, I write software for a living. This blog explores a variety of topics that I've stumbled across in my journey as a software developer. Even though mostly written for my own understanding, my hope is that the curious programmer may find my writings entertaining. 
+      Hola! My name is Pablo and I am a software engineer currently living in Munich, Germany. My first line of code was written 12 years ago while attempting to customize an add-on for my World of Warcraft UI in Lua. A passion for programming has been growning in me ever since and now, at 26 years old, I write software for a living. This blog explores a variety of topics that I've stumbled across in my journey as a software developer. Even though mostly written for my own understanding, my hope is that the curious programmer may find my writings entertaining.
 
   # This photo will be used in the about section.
   #picture:
