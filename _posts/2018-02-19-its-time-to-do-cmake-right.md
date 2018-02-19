@@ -7,7 +7,7 @@ tags: [cmake,cpp]
 
 Not so long ago I got the task of rethinking our build system. The idea was to evaluate existing components, dependencies, but most importantly, to establish a superior design by making use of modern CMake features and paradigms. Most people I know would have avoided such enterprise at all costs, but there is something about writing find modules that makes my brain release endorphins. I thought I was up for an amusing ride. Boy was I wrong.
 
-My excitement was soon shattered after discovering the lack of standard practices in CMake usage and specially the insufficient adoption of modern design patterns. This post explores the concepts of what is known as modern CMake, which advocates for abandoning a traditional variable-based approach for a more structured model based on so-called targets. My intention is to show how "new" (>= 3.0.0) features can be employed to reshape your CMake system into a more maintainable and intuitive alternative that actually make sense. 
+My excitement was soon shattered after discovering the lack of standard practices in CMake usage and specially the insufficient adoption of modern design patterns. This post explores the concepts of what is known as modern CMake, which advocates for abandoning a traditional variable-based approach for a more structured model based on so-called targets. My intention is to show how "new" (>= 3.0.0) features can be employed to reshape your CMake system into a more maintainable and intuitive alternative that actually makes sense.
 
 Many of the concepts presented here find their roots in Daniel Pfeifer's masterpiece [Effective CMake](https://youtu.be/rLopVhns4Zs). Daniel has practically become the Messiah of the modern CMake church, preaching best practices and guidelines in a time when the only standard is to not have one. Daniel, I am your prophet.
 
@@ -177,7 +177,7 @@ set(RAPIDJSON_INCLUDE_DIRS "/usr/include")
 message(STATUS "RapidJSON found. Headers: ${RAPIDJSON_INCLUDE_DIRS}")
 ~~~
 
-Yes, welcome to hell. This were the real pain begins: 3rdparty dependencies. 
+Yes, welcome to hell. This is where the real pain begins: 3rdparty dependencies.
 In the case of rapidjson, a single variable is set to point to its include directories.
 This is exactly what we don't want, we don't want variables, we want targets!
 
