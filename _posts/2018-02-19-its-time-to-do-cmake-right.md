@@ -169,7 +169,7 @@ CMake Error at CMakeLists.txt:9
 
 ## Good boys export their targets
 
-The imported target `RapidJSON::RapidJSON` could not be found, because `RapidJSON.config` did not create it. Let's inspect what rapidjson does in the config installed on my arch linux system:
+The imported target `RapidJSON::RapidJSON` could not be found, because `RapidJSONConfig.cmake` did not create it. Let's inspect what rapidjson does in the config installed on my arch linux system:
 
 ~~~cmake
 get_filename_component(RAPIDJSON_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
