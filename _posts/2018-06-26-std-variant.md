@@ -80,7 +80,7 @@ auto make_visitor(Ts... lamdbas)
 }
 ~~~
 
-This isn't precisely first semester programming class, but I assure you that it looks much more scary that it really is. For the above code to make any sense there are two language features that need to be understood: parameter packs and closure classes. Let's revisit them very quickly.
+This isn't precisely first semester programming class, but I assure you that it looks much more scary than it really is. For the above code to make any sense there are two language features that need to be understood: parameter packs and closure classes. Let's revisit them very quickly.
 
 # Parameter Packs
 
@@ -232,11 +232,11 @@ void f(const T& head, const Ts&... tail)
 Recursive overload sets are a common pattern when dealing with variadic templates. The key idea is simple: split the parameter pack into two parts: a head and a tail. The head is the first parameter in the pack, the tail are the rest.
 
 The pattern is always the same. You provide two overloads for your function: a recursive case and a base case.
-The recursive variant does peels off the head and recursively call itself with the tail. Crucial here is that the size of the pack decreases after each recursive call of `f()`.
+The recursive variant does something with the head and recursively call itself with the tail. Note that the size of the pack decreases after each recursive call of `f()`.
 
 `f()` will keep invoking itself with a smaller list each time until the base case is reached: the parameter pack contains just the last item. Here the compiler will, during overload resolution, call the overload that receives a single argument: `f(const T& t)`. This breaks the recursion and we are done.
 
-Matt does uses the same strategy in his implementation: he defines an overloaded recursive struct. In the recursive case, his struct inherits from head and recursively from an instantiation of itself, using tail. Yes, you heard that right, Matt's visitor inherits from itself:
+Matt does uses the same strategy in his implementation: he defines an overloaded recursive struct. In the recursive case, his struct inherits from head and recursively from an instantiation of itself using tail. Yes, you heard that right, Matt's visitor inherits from itself:
 
 ~~~cpp
 template <class T, class... Ts>
@@ -251,7 +251,7 @@ struct Visitor<T, Ts...> : T, Visitor<Ts...>
 
 The recursion continues to unroll constructing an inheritance hierarchy with all types in the parameter pack, until the base case is reached and the recursion stops.
 
-Matt brings the `operator()` of the super classes (remember we are dealing with closure classes here) into the scope of the derived class. He does this recursively: `operator()`s from all classes in the hierarchy end in the scope of the bottom class in the hierarchy.
+Matt brings the `operator()` of the super classes (remember we are dealing with closure classes here) into the scope of the derived class. He does this recursively: `operator()`s from all classes in the hierarchy end in the scope of the very bottom class.
 
 # Reaching Nirvana
 
