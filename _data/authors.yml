@@ -23,7 +23,7 @@ author1:
   # Social media icons in sidebar.
   # Comment/uncommet to show/hide. Rearrange to change the order in which they appear.
   social:
-    #twitter:         <username>
+    twitter:         pabloariasal
     github:          pabloariasal
     # download:        https://github.com/qwtel/hydejack-starter-kit/archive/master.zip
     email:           mailto:<pabloariasal@gmail.com>
