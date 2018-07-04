@@ -124,7 +124,7 @@ Visitor<A,B,C> make_visitor(A lambda1, B lambda2, C lambda3)
 The implementation of `make_visitor(Ts... args)` above returns an object that inherits from all the types in `Ts`. If this function is called with a set of lambdas, which is what we want, this object will be a struct inheriting from all lambdas provided. Wait, what? Can you inherit from a lambda? What is actually the type of a lambda?
 
 Yes, you can inherit from a lambda and the type of a lambda is, well, only your compiler knows.
-Despite their incredible impact after their introduction, lambdas are jut syntactic sugar. Lambdas are just a shortened notation for constructing callable, a.k.a function objects.
+Despite their incredible impact after their introduction, lambdas are just syntactic sugar. Lambdas are just a shortened notation for constructing callable, a.k.a function objects.
 
 Consider the following example:
 
