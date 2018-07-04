@@ -147,7 +147,7 @@ public:
 
     int operator()(int a)
     {
-        return n + 1;
+        return n + a;
     }
 
 private:
@@ -174,7 +174,7 @@ You might be amazed by my intelligence and creativity, but don't get fooled. Thi
 Some nights ago while browsing reddit I stumbled across a [blog post](https://bitbashing.io/std-visit.html) by Matt Klein on, guess what, `std::visit` . In his post, Matt makes a reasonable critique on the growing complexity of C++ and how absurdly difficult it sometimes is to solve common tasks. To defend his thesis Matt presented the same problem as Juanpe: construct a visitor for a variant from a set of lambdas. This time, however, he provided an implementation:
 
 ~~~cpp
-template <class... Fs>
+template <class... Ts>
 struct Visitor;
 
 template <class T, class... Ts>
