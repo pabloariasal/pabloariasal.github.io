@@ -3,13 +3,13 @@
 # You can change `author1` to your shortname.
 author1:
   # Replace <...> with your own (remove the < >)
-  name:              Pablo Arias
-  email:             pabloariasal@gmail.com
+  name:              Sumendranath Prabhu
+  email:             sumendran@gmail.com
 
   # Used at the bottom of each page and at the top of the `about` layout
   # Markdown enabled, can use multiple paragraphs (enabled by `|`)
   about:             |
-      Hola! My name is Pablo and I am a software engineer currently living in Munich, Germany. My first line of code was written 12 years ago while attempting to customize an add-on for my World of Warcraft UI in Lua. A passion for programming has been growning in me ever since and now, at 26 years old, I write software for a living. This blog explores a variety of topics that I've stumbled across in my journey as a software developer. Even though mostly written for my own understanding, my hope is that the curious programmer may find my writings entertaining.
+      Hello!!! My name is Sumendranath. I am a software engineer specialized in Automotive Base Software. Thought of exploring beyind this and thus I start my Blog. 
 
   # This photo will be used in the about section.
   #picture:
@@ -23,10 +23,10 @@ author1:
   # Social media icons in sidebar.
   # Comment/uncommet to show/hide. Rearrange to change the order in which they appear.
   social:
-    twitter:         pabloariasal
-    github:          pabloariasal
+   # twitter:         pabloariasal
+    github:          Sumendranath
     # download:        https://github.com/qwtel/hydejack-starter-kit/archive/master.zip
-    email:           mailto:<pabloariasal@gmail.com>
+    email:           mailto:<sumendran@gmail.com>
     # rss:             https://<url>/feed.xml
     # facebook:        <username>
     # google:          <number>
@@ -37,7 +37,7 @@ author1:
     # spotify:         <user>/<number>
     # soundcloud:      <username>
     # lastfm:          <username>
-    instagram:       pabloariasal
+    # instagram:       pabloariasal
     # flickr:          <string@string>
     # 500px:           <username>
     # dribbble:        <username>
@@ -55,7 +55,7 @@ author1:
     # npm:             <username>
     # hackernews:      <username>
     # trello:          <firstnamelastname>
-    linkedin:        pablo-arias-519616127
+    # linkedin:        pablo-arias-519616127
     # xing:            <firstname_lastname_counter>
     # blogger:         <number>
     # delicious:       <username>
