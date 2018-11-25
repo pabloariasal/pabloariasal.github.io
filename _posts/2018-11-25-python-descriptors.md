@@ -15,7 +15,7 @@ For a long time the land of *AUR* helpers had a single undisputed king: *pacaur*
 
 Having been lacking a serious contender for so long, people forgot that managing *AUR* packages was a serious deal. There was no man brave enough to adopt the 2000 lines of bash left behind by Spyhawk and cheap copycats started appearing all over the place. The bar was just set too high.
 
-Being stunned by `pacaurs` death and overwhelmed by an endless array of *AUR* helpers I did the only reasonable thing: I wrote another one. That's how *aurepa*, a mixture of *AUR* and arepa, a typical Colombian dish, started to take form. Writing *aurepa* has taken me to explore some of python's darkest corners. Hidden in the shadows I found creatures so smoothly embedded in the python language that you don't even realize exist. Creatures like python descriptors.
+Being stunned by *pacaurs* death and overwhelmed by an endless array of *AUR* helpers I did the only reasonable thing: I wrote another one. That's how *aurepa*, a mixture of *AUR* and arepa, a typical Colombian dish, started to take form. Writing *aurepa* has taken me to explore some of python's darkest corners. Hidden in the shadows I found creatures so smoothly embedded in the python language that you don't even realize they exist. Creatures like python descriptors.
 
 # Getters And Setters Should Be Illegal
 
