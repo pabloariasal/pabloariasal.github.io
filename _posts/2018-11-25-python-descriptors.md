@@ -157,6 +157,8 @@ A similar *magic* happens when the attribute is being modified, e.g. `o.x = 5`, 
 
 Note that data descriptors have higher precedence than instance variables in `__dict__`. If you define a class that contains a data descriptor, e.g. a property, they will opaque all other instance variables with the same name, since `a.property = 'some_new_value'` will execute `a.property.__set__` instead of replacing it. Hence, data descriptors can't be overridden in objects. Non-data descriptors, on the other hand, don't define a `__set__` and can therefore be reassigned in the object's `__dict__`.
 
+I discovered that a lot of python's functionality relies in the descriptor protocol: `@staticmethod`, `@classmethod` are implemented as non-data descriptors. Even normal method invocation is!
+
 ## Property Objects Are Data Descriptors
 
 The implementation of `property` now becomes clear: it replaces the decorated function by a data descriptor. When the attribute is accessed `__get__` is called which in turn calls `fget`, the decorated function. Properties are just wrappers around our function that implement the data descriptor protocol.
@@ -234,8 +236,4 @@ This took me a while to understand but once you see it's fairly simple. The func
 
 The setter decorator, for example, receives the decorated `fset` as argument and constructs a new property object by passing it to its constructor. Note, however, that existing functions in `self` (`fget` or `del`) are also propagated to the new object. This is exactly what decorators are all about, they receive some object, add some stuff to it (in this case `fset`) and return it.
 
-# Conclusion
-
- I discovered that a lot of python's functionality relies in the descriptor protocol: `@staticmethod`, `@classmethod` are implemented as non-data descriptors. Even normal methods are!
-
-*aurepa* might not be the successor of *pacaur* and I might not become the man that Spyhawk once was, but at least this journey has given me, and you, a glimpse of an obscure python feature I didn't know existed. Maybe that cold December night wasn't that tragic after all.
+*aurepa* might not be the successor of *pacaur* and I might not become the man that Spyhawk once was, but at least this journey has given me, and you, a glimpse of an obscure python feature I didn't know existed but use every day. Maybe that cold December night wasn't that tragic after all, like some ying and yang kind of thing.
