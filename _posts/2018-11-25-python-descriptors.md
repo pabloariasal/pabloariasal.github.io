@@ -232,7 +232,7 @@ class Computer():
 		print('{} has been installed!'.format(os))
 ~~~
 
-This took me a while to understand but once you see it's fairly simple. The functions setter, getter and deleter are methods of the property class but also decorators. But what do they decorate? They decorate *self*, i.e. the property object itself they belong to!
+This took me a while to understand but once you see it's fairly simple. The functions `setter`, `getter` and `deleter` are methods of the property class but also decorators. But what do they decorate? They decorate *self*, i.e. the property object itself they belong to!
 
 The setter decorator, for example, receives the decorated `fset` as argument and constructs a new property object by passing it to its constructor. Note, however, that existing functions in `self` (`fget` or `del`) are also propagated to the new object. This is exactly what decorators are all about, they receive some object, add some stuff to it (in this case `fset`) and return it.
 
