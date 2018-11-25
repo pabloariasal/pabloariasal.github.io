@@ -48,7 +48,7 @@ def get_full_version(self):
     return self.version + '-' + str(self.release)
 ~~~
 
-No. Hell no. Don't even think about it. This is not Java. A little piece of me dies every time I see such thing in python. And God have I seen a few.
+No. Hell no. Don't even think about it. This is not Java.
 
 This is inconsistent. This exposes implementation details. When exposing attributes via getters users are forced to make a distinction when accessing them: some are accessed directly with the very nice `object.attribute` notation, others divert to a method invocation. Even when you write a getter to protect access to some attribute, users are not forced to call it, as the protected underlying data is still accessible.
 
