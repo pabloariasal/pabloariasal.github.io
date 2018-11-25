@@ -151,7 +151,7 @@ __del__(self, obj)
 
 Are called *descriptors*. If an objects implements all three, like `property`, it's called a *data descritor*. If only `__get__` is present, the object is called a *non-data descriptor*.
 
-Descriptors can define custom behavior when they are being accessed, modified or deleted. In other words, they *override* python's default attribute access. When the interpreter encounters `o.x` it looks up the `__dict__` of `b` for an entry named *x*. If `x` defines a `__get__`, then `o.x` is translated to `type(o).__dict__['x'].__get__(o, type(o))`. If not, the default `o.__dict__['x']` is returned.
+Descriptors can define custom behavior when they are being accessed, modified or deleted. In other words, they *override* python's default attribute access. When the interpreter encounters `o.x` it looks up the `__dict__` of `o` for an entry named *x*. If `x` defines a `__get__`, then `o.x` is translated to `type(o).__dict__['x'].__get__(o, type(o))`. If not, the default `o.__dict__['x']` is returned.
 
 A similar *magic* happens when the attribute is being modified, e.g. `o.x = 5`, or deleted `del x`. `__set__` and `__del__` will be called, respectively, instead of performing default behavior.
 
