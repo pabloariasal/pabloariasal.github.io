@@ -137,7 +137,7 @@ When `full_version` is accessed the getter method we decorated is somehow being 
 # Python's Descriptor Protocol
 
 Studying the implementation of `property` created more questions than answers.
-We have found out that decorating a getter method with `@property` replaces it by an instance of the property class. This new object stores the decorated getter function, `self.fget = fget`, and executes it inside `__get__()`: `return relf.fget(obj)`.
+We have found out that decorating a getter method with `@property` replaces it by an instance of the property class. This new object stores the decorated getter function, `self.fget = fget`, and executes it inside `__get__()`: `return self.fget(obj)`.
 
 However, when we access the property object we don't get the object itself, but rather the result of its `__get__` method. But why is `__get__` being executed? The answer is simple: magic. That's just how it is, if an object declares a method called `__get__`, python won't return the object itself when accessed, but the result of its `__get__`.
 
