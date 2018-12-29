@@ -13,7 +13,7 @@ The *Arch User Repository*, *AUR* for short, is a community-driven repo that hos
 
 For a long time the land of *AUR* helpers had a single undisputed king: *pacaur*, maintained by my boy Spyhawk. What was once an harmonious monarchy turned into a God-forsaken hell when, in a tragic December night, Spyhawk announced the end of an effort he had driven for over half a decade.
 
-Having been lacking a serious contender for so long, people took *pacaur* for granted and forgot that managing *AUR* packages was a *serious* deal. There was no man brave enough to adopt the 2000 lines of bash left behind by Spyhawk and cheap copycats started appearing all over the place. The bar was just set too high.
+Having been lacking a serious contender for so long, people took *pacaur* for granted and forgot that managing *AUR* packages was a *serious* deal. There was no man brave enough to adopt the 2000 lines of bash left behind by Spyhawk and cheap copycats started appearing all over the place, but the bar was just set too high.
 
 Being stunned by *pacaurs* death and overwhelmed by an endless array of *AUR* helpers I did the only reasonable thing: I wrote another one. That's how *aurepa*, a mixture of *AUR* and arepa, a typical Colombian dish, started to take form. Writing *aurepa* has taken me to explore some of python's darkest corners. Hidden in the shadows I found creatures so smoothly embedded in the python language that you don't even realize they exist. Creatures like python descriptors.
 
