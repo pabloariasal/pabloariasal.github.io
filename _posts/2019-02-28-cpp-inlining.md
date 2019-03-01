@@ -1,16 +1,14 @@
 ---
 layout: post
-
-title: "C++ Inline Variables and Functions: Not What You Think"
+title: C++ - Breaking The Rules With Inline Variables and Functions
 tags: [cpp]
 comments: true
 ---
 
-I've had some free time these days while visiting my parents and little sister in their home in the Colombian Andes. At almost 3000 meters above sea level, it's a cold but cozy place; full of nostalgic memories and friendly faces. Chaotic but always welcoming.
+I've had some free time these days while visiting my parents and little sister in their home in the Colombian Andes. At almost 3000 meters above sea level, it's a very warm place despite the freezing mountain temperatures; full of nostalgic memories and friendly faces. Chaotic but always welcoming.
 
-I finally got around to organize the ever-growing collection of notes I've gathered in the last years. Scrolling through over 130 notes with labels _programming_ and _cpp_, a particular note caught my attention: _C++ - Inline Variables and Functions_.
-
-The note brought back a discussion I had regarding C++17's newly introduced feature: inline variables, which made me realize how misleading and poorly understood C++'s `inline` specifier is. In this post I'll visit the points listed in the note regarding `inline`: when to use it, how to use it, and what it actually means. Chances are you will be surprised.
+I finally got around to organize the ever-growing collection of notes I've gathered in the last years. Scrolling over the 130 notes with the labels _programming_ and _cpp_, a particular one caught my attention: _C++ - Inline Variables and Functions_.
+The note brought back a discussion I had regarding C++17's newly introduced feature: inline variables, which made me realize how misleading and poorly understood C++'s `inline` specifier is. In this post I'll visit the points listed in the note concerning `inline`: when to use it, how to use it, and what it actually means. Chances are you will be surprised.
 
 # Inline Expansion
 
@@ -26,13 +24,13 @@ I guess what I want to say is: performance must be measured and not assumed. Inl
 In C++, you can declare inline functions:
 
 ~~~cpp
-inline auto f(int a, int b)
+inline int f(int a, int b)
 {
 	return a + b;
 }
 ~~~
 
-Function `f` is perfectly valid, but it has a little problem: it doesn't do what you think it does. Not even close. In fact, you can forget everything I wrote earlier about inline expansion, the `inline` keyword has practically nothing to do with actual inlining.
+Function `f` has a little problem: it probably doesn't do what you think. Not even close. In fact, you can forget everything I wrote earlier about inline expansion, the `inline` keyword has practically very little to do with actual inlining.
 
 Don't get me wrong, though, the compiler is still allowed to inline a call to `f`, but it's not forced to. In fact, even if `f` were not declared `inline`, the compiler might still perform an inline expansion.
 
@@ -40,31 +38,31 @@ The `inline` keyword, as specified by the standard, has essentially to do with s
 
 # The One Definition Rule And How To Break It
 
-The note titled _Inline Keyword In C++_ starts with the bullet point:
+The first point in the note reads:
 
 > Functions and variables declared inline may be defined multiple times in a program.
 
-So, apparently, if you declare a function or variable (with external linkage) as `inline`, it may be defined multiple times, breaking the _One Definition Rule_.
+So, apparently, if you declare a function or variable (with external linkage) as `inline`, it may be defined multiple times in the same program. This is essentially a violation of the _One Definition Rule_.
 
-But what does the _One Definition Rule_ (_ODR_) say? Well, basically, that you can only define stuff once: functions, variables, classes, enumeration, etc. No more. No less.
+What does the _One Definition Rule_ (_ODR_) say? Well, basically, that you can only define stuff once: functions, variables, classes, enumeration, etc. No more. No less.
 
 The _ODR_ is not just valid at compilation unit level, but also at program level. This is fairly reasonable: what are your compiler and linker supposed to do if they encounter two different implementations of the same function in your program?
 
-Inline functions and variables are an exception to the _One Definition Rule_, at least partially: they may be defined multiple times in a program. Beware that this is strictly limited to program scope: within a single compilation unit the _ODR_ can't be violated: every single class, function, template or variable used must be defined only once.
+Inline functions and variables are an exception to the _One Definition Rule_: they may be defined multiple times in the program. Beware that this is strictly limited to program scope: within a single compilation unit the _ODR_ can't be violated, i.e. every single class, function, template or variable used must be defined only once.
 
-Being able to define functions and variables multiple times seems like a really cool think, and it might be, but in reality it's very restrictive and horribly dangerous.
+Being able to define functions and variables multiple times seems pretty crazy, but, despite being horribly dangerous, crazy things are often very useful.
 
 # With Great Power Comes Great Undefined Behavior
 
 Consider that I wrote that inline functions and variables _"may be defined multiple times"_ and not _"multiple definitions may exist"_. This brings me to the next bullet point in the note:
 
-> All definitions of inline functions and variables in the entire program must be identical.
+> All definitions of an inline function an variables in the entire program must be identical.
 
 This also has the implication that a definition of an inline function or variable must exist in every translation unit where it is used and declared `inline`.
 
 The intention is to technically allow for multiple definitions but practically not. **By making sure that all definitions are equivalent, the program behaves as if it were only one**. Having different definitions of an inline function or variable with external linkage in the same program results in undefined behavior.
 
-# Header-only Library Developers Love It
+# Header-only Library Developers Best Friend
 
 The most important usage of the `inline` keyword is when defining a (non-static) function or variable in a header file:
 
@@ -78,7 +76,7 @@ inline int f(int a, int b)
 inline std::string MyGlobalVariable{"This is so cool"}; // has external linkage
 ~~~
 
-Failing to declare a non-static function or variable in a header as `inline` may result in nasty multiple-definition errors when linking, given that only inline functions and variables can break the _ODR_, and, not declared static, have external linkage.
+Failing to declare a non-static (i.e. with external linkage) function or variable in a header as `inline` may result in nasty multiple-definition errors when linking, given that only inline functions and variables can break the _ODR_, and, not declared static, have external linkage.
 
 Header-only libraries make use of this mechanism extensively. Definitions of non-templated functions and variables can be shipped in header files and be included in different compilation units without having to be defined in a separate source file. This is strategy also ensures that all definitions of the same function are identical.
 
@@ -172,7 +170,7 @@ struct SomeClass
 
 This is also perfectly valid, because `constexpr` functions and variables are implicitly inline.
 
-To be fair, in-class multiple definition of `constexpr` variables was already possible in C++14. Inline variables, therefore, extend the same capabilities to general constants not known at compile time.
+To be fair, in-class multiple definition of `constexpr` variables was already possible in C++14. Inline variables, therefore, extend the same capabilities to general constants with static storage duration (i.e. declared static) that are either not known at compile time or are not of a literal type.
 
 ## Technically Many, Practically One
 
@@ -266,7 +264,8 @@ Even though, theoretically, the variable `myRandomInt` is initialized multiple t
 # Wrapping Up
 
 * Inline expansion might be performed regardless of the `inline` declaration of a function.
-* Inline functions and variables may be defined multiple times in the same program, but not compilation unit.
+* Inline functions and variables (with external linkage)
+may be defined multiple times in the same program, but not compilation unit.
 * Inline function and variables must be defined in every compilation unit where they are used and declared inline.
 * All definitions must be identical. Different definitions result in undefined behavior.
 * `constexpr` implies `inline`
