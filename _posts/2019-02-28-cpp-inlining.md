@@ -1,6 +1,6 @@
 ---
 layout: post
-title: C++ - Breaking The Rules With Inline Variables and Functions
+title: C++ - Inline Variables and Functions
 tags: [cpp]
 comments: true
 ---
