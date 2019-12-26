@@ -10,7 +10,7 @@ order: 4
 
 I'm  also starting a career as beer connoisseur, and suffer from an unhealthy passion for football.
 
-One of my favorite things in the world is spending time in my home in the Colombian countryside with my dude Nova:
+One of my favorite things in the world is spending time in my home in the Colombian Andes with my dude Nova:
 ![doggy](/assets/img/nova.jpeg "nova")
 
 He got a little daughter some years ago, this Terra a couple of weeks old:
@@ -18,6 +18,3 @@ He got a little daughter some years ago, this Terra a couple of weeks old:
 ![doggy](/assets/img/terra.jpeg "terra")
 
 Feel free to hit me up in case you need more newfie pictures.
-
-And btw I use Arch Linux.
-
