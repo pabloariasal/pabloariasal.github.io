@@ -5,9 +5,9 @@ tags: [cpp]
 comments: true
 ---
 
-Today is the last day of the year. I'm wearing my yellow underwear; it's tradition around here. People say that it shall bring you wealth, luck and happiness for the upcoming twelve months. Growing up, I used to consider it silly to wear yellow underwear on new year's eve. Today I think silly is the one who doesn't.
+Today is the last day of the year. I'm wearing my yellow underwear; it's a new year's tradition in this part of the world. People say it shall bring wealth, luck and happiness for the upcoming twelve months. Growing up, I used to consider it silly to wear yellow underwear on new year's eve. Today I think silly is the one who doesn't.
 
-You are probably reading this because you code in C++. This means that you have battled frustration mastering `auto` deduction rules or lost your sanity trying to understand why `std::initialer_list` was considered a good idea. Anyone who has been doing this long enough knows that variables initialization is everything but trivial. It's an art too essential to ignore yet too challenging to master. I'm here to tell you that there is more to it.
+You are probably reading this because you code in C++. This means that you have battled frustration mastering `auto` deduction rules or lost your sanity trying to understand why `std::initializer_list` was considered a good idea. Anyone who has been doing this long enough knows that variables initialization is everything but trivial. It's an problem too essential to ignore but too challenging to master. And today I'm here to tell you that there is more to it.
 
 # Static Variables
 
@@ -270,7 +270,7 @@ fiasco.
 * `constinit` forces the evaluation of a variable as a constant expression and doesn't imply const
 * After static initialization dynamic initialization takes places, which happens at runtime before `main()`
 * Within a compilation unit static variables are initialized in the order of declaration
-* The order of initialization of static variables is undefined accross compilation units
+* The order of initialization of static variables is undefined across compilation units
 
 [^1]: Unless the dynamic initialization is deferred, [see](https://en.cppreference.com/w/cpp/language/initialization)
 [^2]: [see](https://en.cppreference.com/w/cpp/language/storage_duration)
