@@ -5,9 +5,9 @@ tags: [cpp]
 comments: true
 ---
 
-Today is the last day of the year. I'm wearing my yellow underwear; it's a tradition around here. People say that starting the new year wearing yellow underwear shall bring you wealth and happiness for the upcoming twelve months. Growing up, I used to consider it silly to wear yellow underwear on new year's eve. Today I think silly is the one who doesn't.
+Today is the last day of the year. I'm wearing my yellow underwear; it's tradition around here. People say that it shall bring you wealth, luck and happiness for the upcoming twelve months. Growing up, I used to consider it silly to wear yellow underwear on new year's eve. Today I think silly is the one who doesn't.
 
-Anyone who has been doing C++ long enough knows that variables initialization is everything but trivial. You've probably battled frustration mastering `auto` deduction rules or lost your sanity trying to understand why `std::initialer_list` was considered a good idea. I'm here to tell you that there is more to it.
+You are probably reading this because you code in C++. This means that you have battled frustration mastering `auto` deduction rules and lost your sanity trying to understand why `std::initialer_list` was considered a good idea. Anyone who has been doing this long enough knows that variables initialization is everything but trivial. It's an art too essential to ignore yet too challenging to master. I'm here to tell you that there is more to it.
 
 # Static Variables
 
@@ -34,7 +34,7 @@ run and destroyed after execution finishes. Such variables have
 _static storage duration_.
 
 The lifetime of static variables doesn't depend on the
-execution: they always exist no matter what; forever. This leads to the beautiful property that they
+execution: they always exist; forever. This leads to the beautiful property that they
 can be potentially evaluated and initialized at compile time.
 
 # The Two Stages of Static Variable Initialization
@@ -58,7 +58,7 @@ In an ideal world all static variables are const-initialized.
 
 After static initialization, dynamic initialization takes place. Dynamic
 initialization happens at runtime for variables that can't be evaluated at
-compile time. Here, static variables are initialized every
+compile time[^1]. Here, static variables are initialized every
 time the executable is run and not just once during compilation.
 
 # The Green Zone - Constant Initialization
@@ -79,7 +79,7 @@ int MyStruct::a = 67;
 ```
 
 Here, `MyStruct::a` will be const-initialized, because `67` is a compile
-time constant, i.e. a constant expression.
+time constant, i.e. a constant expression[^3].
 
 ## Force Const Initialization with `constexpr`
 
@@ -212,7 +212,7 @@ alongside its managed memory into the data section of the binary.
 
 # The Red Zone - Static Initialization Order Fiasco
 
-Dynamic(!) initialization of static variables suffers from a very scary
+Dynamic initialization of static variables suffers from a very scary
 defect: the order in which variables are initialized at runtime is not
 always well-defined.
 
@@ -251,7 +251,7 @@ int main()
 ```
 
 This program is ill-formed. It may print `14` or `0` (all static variables
-are at least zero-initialized during static initialization stage),
+are at least zero-initialized during static initialization),
 depending if the dynamic initialization of `A` happens before `B` or not.
 
 Note that this problem can only happen during the dynamic initialization
@@ -265,13 +265,13 @@ fiasco.
 
 * Static variables must be initialized before the program starts
 * Variables that can be evaluated at compile time (those initialized by a constant expression) are const-initialized
-* All other static variables are zero-initialized
+* All other static variables are zero-initialized during static initialization
 * `constexpr` forces the evaluation of a variable as a constant expression and implies const
 * `constinit` forces the evaluation of a variable as a constant expression and doesn't imply const
 * After static initialization dynamic initialization takes places, which happens at runtime before `main()`
 * Within a compilation unit static variables are initialized in the order of declaration
 * The order of initialization of static variables is undefined accross compilation units
 
-
-[^1]: Unless the dynamic initialization is deferred, see [here](https://en.cppreference.com/w/cpp/language/initialization)
+[^1]: Unless the dynamic initialization is deferred, [see](https://en.cppreference.com/w/cpp/language/initialization)
 [^2]: [see](https://en.cppreference.com/w/cpp/language/storage_duration)
+[^3]: The compiler can promote initialization for non-constant expressions to compile time under certain conditions, [see](https://en.cppreference.com/w/cpp/language/initialization)
