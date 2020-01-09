@@ -217,7 +217,7 @@ defect: the order in which variables are initialized at runtime is not
 always well-defined.
 
 Within a single compilation unit, static variables are initialized in the
-same order as they are defined in the source. Across compilation units,
+same order as they are defined in the source (this is called *Ordered Dynamic Initialization*). Across compilation units,
 however, the order is undefined: you don't know if a static variable
 defined in `a.cpp` will be initialized before or after one in `b.cpp`.
 
@@ -261,6 +261,44 @@ makes compile time initialization so much safer than dynamic
 initialization, as it doesn't suffer from the static initialization order
 fiasco.
 
+## Solving The Static Initialization Order Fiasco
+
+There are multiple ways to solve the Static Initialization Order Fiasco. Encountering it, however, a symptom of poor software design directly violating principles like encapsulation, SRP, and separation of concerns. IMHO the best way to solve the static initialization order problem is to refactor the code to break the initialization dependency of globals across compilation units.
+
+If refactoring is not an option, one common solution is the [Initialization On First Use](https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use). The basic idea is to design your static variables that are not constant expressions (i.e. those that must be initialized at runtime) in a way that they are created *when they are accessed for the first time*. This approach uses a static local variable inspired by the [Meyer's Singleton](http://laristra.github.io/flecsi/src/developer-guide/patterns/meyers_singleton.html). 
+With this strategy it is possible to control the time when static variables are initialized at runtime, avoiding use-before-init.
+
+```cpp
+// a.cpp
+int duplicate(int n)
+{
+    return n * 2;
+}
+
+auto& A()
+{
+  static auto a = duplicate(7); // Initiliazed first time A() is called
+  return a;
+}
+```
+
+```cpp
+// b.cpp
+#include <iostream>
+#include "a.h"
+
+auto B = A();
+
+int main()
+{
+  std::cout << B << std::endl;
+  return EXIT_SUCCESS;
+}
+
+```
+
+This program will always consistently print `14`, as it is guaranteed that `A` will always be initialized before `B`.
+
 # That's All Folks
 
 * Static variables must be initialized before the program starts
@@ -271,6 +309,7 @@ fiasco.
 * After static initialization dynamic initialization takes places, which happens at runtime before `main()`
 * Within a compilation unit static variables are initialized in the order of declaration
 * The order of initialization of static variables is undefined across compilation units
+* You can use the Initialization On First Use Idiom to circumvent the static initialization oder fiasco
 
 [^1]: Unless the dynamic initialization is deferred, [see](https://en.cppreference.com/w/cpp/language/initialization)
 [^2]: [see](https://en.cppreference.com/w/cpp/language/storage_duration)
