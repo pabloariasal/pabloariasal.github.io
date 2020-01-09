@@ -7,7 +7,7 @@ comments: true
 
 Today is the last day of the year. I'm wearing my yellow underwear; it's a new year's tradition in this part of the world. People say it shall bring wealth, luck and happiness for the upcoming twelve months. Growing up, I used to consider it silly to wear yellow underwear on new year's eve. Today I think silly is the one who doesn't.
 
-You are probably reading this because you code in C++. This means that you have battled frustration mastering `auto` deduction rules or lost your sanity trying to understand why `std::initializer_list` was considered a good idea. Anyone who has been doing this long enough knows that variables initialization is everything but trivial. It's an problem too essential to ignore but too challenging to master. And today I'm here to tell you that there is more to it.
+You are probably reading this because you code in C++. This means that you have battled frustration mastering `auto` deduction rules or lost your sanity trying to understand why `std::initializer_list` was considered a good idea. Anyone who has been doing this long enough knows that variable initialization is everything but trivial. It's a problem too essential to ignore but too challenging to master. Today I'm here to tell you that there is more to it.
 
 # Static Variables
 
@@ -46,15 +46,18 @@ isn't. And, as always, you can do a lot of self damage if you are not
 careful.
 
 Initialization of static variables happens in two consecutive stages:
-_static_ and _dynamic_.
+_static_ and _dynamic_ initialization.
 
-Static initialization happens first and usually at compile time. Initial
-values for static variables are evaluated during compilation once and
+Static initialization happens first and usually at compile time. If possible, initial
+values for static variables are evaluated during compilation and
 burned into the data section of the executable. Zero
 runtime overhead, early problem diagnosis, and, as we will see later, safe. This
 is called [constant
 initialization](https://en.cppreference.com/w/cpp/language/constant_initialization).
 In an ideal world all static variables are const-initialized.
+
+If the initial value of a static variable can't be evaluated at compile time, the compiler will perform zero-initialization.
+Hence, during static initialization all static variables are either const-initialized or zero-initialized.
 
 After static initialization, dynamic initialization takes place. Dynamic
 initialization happens at runtime for variables that can't be evaluated at
