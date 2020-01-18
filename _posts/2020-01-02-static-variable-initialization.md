@@ -34,7 +34,8 @@ run and destroyed after execution finishes. Such variables have
 _static storage duration_.
 
 The lifetime of static variables doesn't depend on the
-execution: they always exist; forever. This leads to the beautiful property that they
+execution: they always exist; forever; no matter what.
+This leads to the beautiful property that they
 can be potentially evaluated and initialized at compile time.
 
 # The Two Stages of Static Variable Initialization
@@ -266,7 +267,7 @@ fiasco.
 
 ## Solving The Static Initialization Order Fiasco
 
-There are multiple ways to solve the Static Initialization Order Fiasco. Encountering it, however, a symptom of poor software design directly violating principles like encapsulation, SRP, and separation of concerns. IMHO the best way to solve the static initialization order problem is to refactor the code to break the initialization dependency of globals across compilation units.
+Encountering the static initialization order fiasco is often a symptom of poor software design. IMHO the best way to solve it is by refactoring the code to break the initialization dependency of globals across compilation units. Make your modules self-contained and strive for constant initialization.
 
 If refactoring is not an option, one common solution is the [Initialization On First Use](https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use). The basic idea is to design your static variables that are not constant expressions (i.e. those that must be initialized at runtime) in a way that they are created *when they are accessed for the first time*. This approach uses a static local variable inspired by the [Meyer's Singleton](http://laristra.github.io/flecsi/src/developer-guide/patterns/meyers_singleton.html). 
 With this strategy it is possible to control the time when static variables are initialized at runtime, avoiding use-before-init.
