@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Vim is For The Lazy
+title: Vim - Advanced Text Editing For The Lazy
 comments: true
 tags: [vim]
 ---
