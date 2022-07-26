@@ -3,7 +3,7 @@
 layout: list
 
 # The title of the tag's page.
-title: Build Systems
+title: CMake
 
 # The name of the tag, used in a post's front matter (e.g. tags: [<slug>]).
 slug: cmake
