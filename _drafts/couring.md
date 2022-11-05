@@ -352,92 +352,45 @@ Afterwards we will improve the implementation so that the coroutines are waken u
 
 Interested? [Read part 2]()
 
-# Part 2
-
-In this second part of the series we will rewrite our program by making use of C++ coroutines.
-
-The idea is simple: we want to implement a coroutine that loads and parses an OBJ file from disk asynchronously with `io_uring`. When this coroutine is called it should push a submission request into the queue and suspend execution, returning to the caller. The coroutine can be resumed later once the completion entry has arrived and the parsing takes place.
-
-# A Coroutine Implementation
-
-## What do we want?
-
-```cpp
-// loadfile
-
-```
-## ReadFileAwaitable
-add both the pushing and polling part (only blocking)
-
-## Task
-## coroutines function
-
-# Multithreaded
-// loadFilePool
-// ThreadPool
-
-TODO:
+# Todos
 
 strace
+github repo
+reddit discussion
 
-We want to co_await a read operation, when we are woken up we want to start in a different thread.
+./run_all build_release
+#########
+Running normal threading
+Processed 512 files.
 
-In the last part we wrote a program that reads and parses hundreds of OBJ files using `io_uring`. We will now rewrite the program by making use C++20 coroutines.
+real	0m0.383s
+user	0m1.247s
+sys	0m0.068s
+#########
+Running iouring
+Processed 512 files.
 
-# C++20 Coroutines
+real	0m0.352s
+user	0m0.301s
+sys	0m0.050s
+#########
+Running couroutines
+Processed 512 files.
 
-A coroutine is a function that can suspend execution. Suspending execution means to store the current execution context of the "function" (local values, parameters, current execution point) and return control back to the caller, as would happen after a normal `return`. The difference is that after beign suspended the coroutine remains alive, dormant, but alive and can be resumed at a later point.
+real	0m0.314s
+user	0m0.293s
+sys	0m0.020s
+#########
+Running coro pool
+Processed 512 files.
 
-When a coroutine is suspended all local variables, parameters and resume point are stored in a heap-allocated object called the coroutine frame. The coroutine is controlled with a so-called coroutine handle, which can be used to resume the coroutine or destroy the coroutine frame.
+real	0m0.218s
+user	0m0.753s
+sys	0m0.027s
+#########
+Running trivial
+Processed 512 files.
 
-A coroutine can be resumed at a later point in time, here the execution context (i.e local variables) is restored from the coroutine frame and execution resumes right from where the coroutine was last suspended, until either the coroutine ends or the next suspension point is encountered.
-
-In C++ coroutines are stackless, this means that even thought the behave similar to functions there is no stack frame being created. The execution of the coroutine happens "magically".
-
-A suspension point of a coroutine can be denoted with the keywords `co_await`, `co_yield` or `co_return`. `co_yield` suspends execution of the coroutine by yielding a value, similar to what python's `yield`.
-
-```cpp
-generator<int> count_until(int n) {
-  for (int i = 0; i < n; ++i)
-  {
-    co_yield ++i;
-  }
-}
-```
-
-Which can be used like:
-
-```cpp
-auto generator = count_until(5);
-while(!generator.isDone()) {
-  std::cout << generator() << '\n';
-}
-```
-will print:
-```
-1
-2
-3
-4
-5
-```
-
-`generator` is a type that we have to write ourselves, the *coroutine type*. It internally stores the coroutine handle which is used to resume to coroutine. `generator` overloads `operator()` from where it calls `this->coroutine_handle().resume()`. This causes the coroutine to resume execution until the next `co_yield` is encountered, yielding the next value and returning again control back to the caller.
-
-Once we have called `generator()` enough times the coroutine will finish. We can use the coroutine handle to check if a coroutine has finished running by calling `this->coroutine_handle.done()`. This is what we do in the `isDone()` member function of `generator`.
-
-The lifetime of the coroutine frame must be managed by us, this is why the desctructor of `generator` must call `this->coroutine_handle.destroy()`, which will deallocate the coroutine frame.
-
-`co_return` is similar to `co_yield` with the difference that it completes execution of the coroutine.
-
-## Coroutine Promise
-
-C++20 coroutines are raw, this means that instead of being a finished cake, they are more like a bunch of flour, eggs and butter. In order to implement a coroutine you have to write a lot of supporting code and boilerplate, you must bake your own cake. For this reason it is usual to make use of a coroutine library like [cppcoro by Lewis Baker](https://github.com/lewissbaker/cppcoro), which implements above's `generator` type, among a lot of more useful things. BTW go check out Lewis Baker [blog series](https://lewissbaker.github.io/) on coroutines if you haven't so. Truly marvelous.
-
-One object that we have o write when implementing a coroutine is the *promise object*.
-
-// promise object in the context of co_yield
-
-# Awaitables
-
-More interesting for us is `co_await`. `co_await` is an operator that expects an *awaitable*, or something that can be converted into an awaitable via `operator co_await()`. `co_await` suspends the coroutine. An awaitable is a type that
+real	0m0.324s
+user	0m0.300s
+sys	0m0.024s
