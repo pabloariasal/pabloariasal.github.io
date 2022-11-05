@@ -226,14 +226,14 @@ We will now implement our program using `liburing`.
 
 # Third Attempt: `liburing`
 
-First of all we define a thin wrapper RAII class that creates the `io_uring` object and frees it upon destruction:
+First of all we define a thin wrapper RAII class that initialized an `io_uring` object and frees it upon destruction:
 
 ```cpp
 class IOUring {
 public:
   explicit IOUring(size_t queue_size) {
-    if (auto s = io_uring_queue_init(NUM_FILES, &ring_, 0); s < 0) {
-      throw std::runtime_error("error: " + std::to_string(s));
+    if (auto s = io_uring_queue_init(queue_size, &ring_, 0); s < 0) {
+      throw std::runtime_error("error initializing io_uring: " + std::to_string(s));
     }
   }
 
@@ -253,7 +253,22 @@ private:
 };
 ```
 
-The implementation consists of two parts: first we must push the file read requests to the submission queue, second we have to wait for them to arrive at the completion queue
+`io_uring_queue_init` initializes an instance of `io_uring` with a given queue size.
+
+The implementation consists of two parts: first we must push the file read requests to the submission queue. Second, we have to wait for completion requests to arrive at the completion queue and parse the contents of the buffer as they come.
+
+We start by creating an `io_uring` instance with enough queue capacity to hold an entry for all files. Next, we must allocate the buffers, one per file.
+
+```cpp
+std::vector<Result> iouring_only(const std::vector<ReadOnlyFile> &files) {
+  IOUring uring{files.size()};
+  auto buffs = initializeBuffers(files);
+  pushEntriesToSubmissionQueue(files, buffs, uring);
+  return readEntriesFromCompletionQueue(files, buffs, uring);
+}
+```
+
+`pushEntriesToSubmissionQueue` writes the submission entries into the submission queue:
 
 ```cpp
 void pushEntriesToSubmissionQueue(const std::vector<ReadOnlyFile> &files,
@@ -266,21 +281,6 @@ void pushEntriesToSubmissionQueue(const std::vector<ReadOnlyFile> &files,
   }
 }
 ```
-First of all we must ask the kernel to load the files. For this we create a `io_uring` instance, allocate the buffers, and write entries into the submission queue, one per file:
-
-```cpp
-std::vector<Result> iouring_only(const std::vector<ReadOnlyFile> &files) {
-  auto buffs = initializeBuffers(files);
-
-  IOUring uring{files.size()};
-  for (size_t i = 0; i < files.size(); ++i) {
-    struct io_uring_sqe *sqe = io_uring_get_sqe(uring.get());
-    io_uring_prep_read(sqe, files[i].fd(), buffs[i].get(), buffs[i].size(), 0);
-    io_uring_sqe_set_data64(sqe, i);
-  }
-  // ...
-}
-```
 
 `io_uring_get_sqe` creates an entry in the submission queue, `sqe`. We can now set the contents of the submission entry with `io_uring_prep_read`, with specifies that we want the kernel to read the contents of the file pointed to by `files[i].fd()` into the buffer `buffs[i]`.
 
@@ -289,21 +289,31 @@ One can also append user data to the submission entry with `io_uring_sqe_set_dat
 After we have written all the submission entries into the queue its time to submit them to the kernel and wait until they start appearing in the completion queue. Once completion entries appear, we can read the corresponding buffers into OBJ files:
 
 ```cpp
-std::vector<Result> results;
-while (results.size() < files.size()) {
-  io_uring_submit_and_wait(uring.get(), 1);
-  io_uring_cqe *cqe;
-  unsigned head;
-  int processed{0};
-  io_uring_for_each_cqe(uring.get(), head, cqe) {
-    auto id = io_uring_cqe_get_data64(cqe);
-    results.push_back({.status_code = cqe->res, .file = files[id].path()});
-    if (results.back().status_code) {
-      readObjFromBuffer(buffs[id], results.back().result);
+std::vector<Result> readEntriesFromCompletionQueue(const std::vector<ReadOnlyFile> &files,
+                                const std::vector<Buffer> &buffs,
+                                IOUring &uring) {
+  std::vector<Result> results;
+  results.reserve(files.size());
+  while (results.size() < files.size()) {
+    io_uring_submit_and_wait(uring.get(), 1);
+
+    io_uring_cqe *cqe;
+    unsigned head;
+    int processed{0};
+    io_uring_for_each_cqe(uring.get(), head, cqe) {
+      auto id = io_uring_cqe_get_data64(cqe);
+      results.push_back({.status_code = cqe->res, .file = files[id].path()});
+      if (results.back().status_code) {
+        readObjFromBuffer(buffs[id], results.back().result);
+      }
+      ++processed;
     }
-    ++processed;
+
+    io_uring_cq_advance(uring.get(), processed);
   }
-  io_uring_cq_advance(uring.get(), processed);
+
+  return results;
+}
 }
 ```
 
@@ -357,40 +367,3 @@ Interested? [Read part 2]()
 strace
 github repo
 reddit discussion
-
-./run_all build_release
-#########
-Running normal threading
-Processed 512 files.
-
-real	0m0.383s
-user	0m1.247s
-sys	0m0.068s
-#########
-Running iouring
-Processed 512 files.
-
-real	0m0.352s
-user	0m0.301s
-sys	0m0.050s
-#########
-Running couroutines
-Processed 512 files.
-
-real	0m0.314s
-user	0m0.293s
-sys	0m0.020s
-#########
-Running coro pool
-Processed 512 files.
-
-real	0m0.218s
-user	0m0.753s
-sys	0m0.027s
-#########
-Running trivial
-Processed 512 files.
-
-real	0m0.324s
-user	0m0.300s
-sys	0m0.024s
