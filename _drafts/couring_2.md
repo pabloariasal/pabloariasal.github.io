@@ -1,11 +1,13 @@
 ---
 layout: post
-title: Playing with io_uring and C++20 Coroutines - Part 2
+title: C++20 Coroutines and io_uring - Part 2/3
 tags: [cpp]
 comments: true
 ---
 
-In the [first part]() of the series we learned about `io_uring` and wrote a program that reads and parses hundreds of OBJ files using `liburing`. In this second part of the series we will rewrite that program of by making use of C++20 coroutines.
+In the [first part]() of the series we learned about `io_uring` by writing a program that reads and parses hundreds of OBJ files. In this second part of the series we will rewrite that program of by making use of C++20 coroutines.
+
+<img src="{{ site.baseurl }}/assets/img/ohne_rahmen.png" width="500" height="auto">
 
 This post is not meant to be an in-depth explanation of C++ coroutines, but rather a showcase of how coroutines can be used together with `io_uring`. If you are not familiar with C++ coroutines yet, [Lewis Baker's blog series](https://lewissbaker.github.io/) is a great place to start.
 
@@ -249,8 +251,8 @@ std::vector<Result> gatherResults(const std::vector<Task> &tasks) {
 
 At the end of the function's block scope, all `Task`s are destroyed, deallocating all coroutine frames.
 
-You may be asking yourself: what is the actual point of all this is compared to the previous implementation?Its a fair question and to be honest, in this particular case there is little gain, we are just adding unnecessary boilerplate to an already quite straight-forward implementation. Its also not particularly more efficient: we are waking up the coroutines in the main thread, performing parsing sequentially.
+You may be asking yourself: what is the actual point of all this is compared to the implementation without coroutines? Its a fair question. One may argue that we have just added unnecessary boilerplate to an already straight-forward implementation. Its also not particularly more efficient: we are stillperforming parsing sequentially in a single thread.
 
-Luckily we are not done yet. See, the beauty of coroutines is that they are very composable. Once you a have a coroutine-based implementation adding more awaitables or other coroutines is child's play.
+Luckily we are not done yet. See, the beauty of coroutines is that they are very composable. Once you a have a coroutine-based implementation adding more awaitables or other coroutines is child's play, they fit like lego stones.
 
-In [part 3]() we will extend our coroutine-based implementation such that parsing is performed in parallel. I promise you that everything will make sense then.
+In [part 3]() we will extend our coroutine-based implementation such that parsing is performed in parallel in a thread pool. This is were the real power of coroutines will come to light.

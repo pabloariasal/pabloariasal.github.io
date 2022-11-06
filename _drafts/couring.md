@@ -1,44 +1,44 @@
 ---
 layout: post
-title: C++20 Coroutines and io_uring - Part 1
+title: C++20 Coroutines and io_uring - Part 1/3
 tags: [cpp]
 comments: true
 ---
 
-As part of my job I have to deal with very heavy file I/O. The problem is always the same: read hundreds of files into memory as efficiently as possible.
+As part of my job I have to deal with heavy I/O loads. Multiple times I've jumped into a fighting ring trying to defeat a monster that demands me to perform thousands of I/O operations in the most efficient way possible. This has inevitable directed my attention to more powerful weapons, like asynchronous I/O. While traditional async I/O APIs on Linux were limiting in multiple ways, the new kid on the block, io_uring, changes the game. This new API in the kernel offers efficiency and scalability never seen before. With coroutines being accepted into the C++20 standard and compilers having matured enough in their implementations, combining io_uring with coroutines became an irresistible hobby project.
 
-This is a problem that every systems programmer will face sooner or later. There are many different ways of approaching it, for me it was the trigger to play around with `io_uring`, the new Linux API for high-performance asynchronous I/O. With coroutines being accepted into the C++20 standard and compilers having matured enough in their implementations, it became an irresistible hobby project.
+In this series of posts we'll write a program that reads hundreds of files stored on disk using Linux io_uring and C++20 coroutines. The motivation comes from the fact that there are lots of in-depth resources for both io_uring and C++20 coroutines, but practically nothing showing how to combine both. Asynchronous I/O and coroutines go as well together as bread and butter.
 
-In this post we'll write a program that reads and parses hundreds of [wavefront OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file) files stored on disk using Linux `io_uring` and C++20 coroutines. Its not meant to be an in-depth guide of either one of these topics, nor be the most efficient implementation possible, but rather to showcase the synergy that forms when used together. Asynchronous I/O and coroutines go as well together as bread and butter.
-
-The motivation comes from the fact that there are lots of in-depth resources for both `io_uring` and C++20 coroutines, but practically nothing showing how to combine both.
-
+Before continuing appreciate this drawing my girlfriend did for me, it shows io_uring coexisting harmonically with coroutines:
 <img src="{{ site.baseurl }}/assets/img/ohne_rahmen.png" width="500" height="auto">
 
-The series will be split into three parts. In the first part we will lay the ground work and solve the problem using `io_uring` only, in the second part we will re-write the program on top of C++20 coroutines. In the third part we will extend the coroutines implementation by including multi-threading.
+The series will be split into three parts. In the first part we will solve the problem using io_uring only. In the second part we will remodel the implementation on top of C++20 coroutines. In the third part we will optimize the program by making it multi-threaded, this will showcase the true power of coroutines.
 
-# Motivation
+# Async I/O ❤ Coroutines
 
-Asynchronous I/O, as opposed to synchronous I/O, is based on the idea of performing an I/O operation without blocking the calling thread. In other words, the thread performing the operation is released immediately, and can do other work as the requested operation is performed in the background. After a while the thread collects the results of the operation. Its like when you tell your pizza guy: "Giovanni, put a margarita in the oven, I'll go grab something from the pharmacy and will be right back".
+Asynchronous I/O, as opposed to synchronous I/O, describes the idea of performing an I/O operation without blocking the calling thread. Instead of waiting until the operation finishes, the thread is released immediately and can do other work while the requested operation is being performed in the background. After a while the calling thread (or some other one) can come back and collect the results of the operation. Its like when you tell your pizza guy: "put a margarita in the oven, I'll go grab something from the pharmacy and will be right back".
 
-Asynchronous I/O can be a lot more efficient than synchronous I/O, threads don't need to wait for resources to become available, but at the same time it makes programs more complex. Programs need to work, well, asynchronously, they must remember to pick up the margaritas they ordered. Coroutines allow us to write asynchronous code as if it was synchronous. If you write a coroutine that loads a file from disk, it can suspend execution and return to the caller while the file is being loaded, and resume once the data is available. All written as if it was a good-old synchronous call.
+Asynchronous I/O can be a lot more efficient than synchronous I/O, threads don't need to wait for resources to become available, but at the same time it makes programs more complex. Programs need to work, well, asynchronously, they must remember to pick up the margaritas they ordered.
 
-Combining asynchronous I/O and coroutines allows us to write asynchronous programs without actually writing asynchronous code. The best of both worlds.
+Coroutines allow us to write asynchronous code as if it was synchronous. If you write a coroutine that loads a file from disk, it can suspend execution and return to the caller while the file is being loaded, and resume once the data is available. All written as if it was a good-old synchronous call.
+
+Combining asynchronous I/O and coroutines allows us to write asynchronous programs without actually writing asynchronous code. The best of both worlds. These are the ideas we will explore in this series of posts.
 
 # Goals
 
-In this post series we will be writing a program that reads and parses hundreds of OBJ files from disk.
+In this post series we will be writing a program that reads and parses hundreds of [wavefront OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file) files from disk.
 
 Its important to understand the distinction between reading and parsing. Reading denotes the action of loading the contents of a file from disk into a memory buffer. Parsing means taking the data in the buffer and transforming into into a data structure that makes sense to the application.
 
 An OBJ is an ASCII file that describes the geometry of one or more 3D triangular meshes. The file encodes information like the triangles that make up the mesh, their vertices, colors, surface normals, etc. Parsing an OBJ file means converting its ASCII representation into a C++ objects that has a convenient API.
 
 <img src="{{ site.baseurl }}/assets/img/Dolphin_triangle_mesh.png" width="350" height="auto">
-[source](https://en.wikipedia.org/wiki/Triangle_mesh)
+source: [wikipedia](https://en.wikipedia.org/wiki/Triangle_mesh)
 
-For parsing the OBJ files we will use the great [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) library. It receives a string containing the contents of the OBJ file and parses it into a `ObjReader` object:
+For parsing the OBJ files we will use a library called [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader). It receives a string containing the contents of the OBJ file and parses it into a `ObjReader` object:
 
 ```cpp
+std::string obj_data = //...
 tinyobj::ObjReader reader;
 reader.ParseFromString(obj_data);
 ```
@@ -51,9 +51,9 @@ std::cout << reader.GetShapes().size() << '\n';
 
 # Ground Work
 
-First of all let's lay down some ground work. We will define some basic types and abstractions that will make our implementation easier and safer, mainly by wrapping C APIs within RAII objects.
+First of all let's lay down some ground work. We will define some basic types and abstractions that will make our implementation easier and safer.
 
-We will be dealing with files and buffers, so let's introduce abstractions for both:
+We will be dealing with files, so we write an RAII class that manages a read-only file:
 
 ```cpp
 class ReadOnlyFile {
@@ -61,12 +61,11 @@ public:
   ReadOnlyFile(const std::string &file_path) : path_{file_path} {
     fd_ = open(file_path.c_str(), O_RDONLY);
     if (fd_ < 0) {
-      throw std::runtime_error("Could not open file: " + file_path +
-                               ". Error: " + strerror(errno));
+      throw std::runtime_error("Fail to open file");
     }
     size_ = get_file_size(fd_);
     if (size_ < 0) {
-      throw std::runtime_error("Could not estimate size of file");
+      throw std::runtime_error("Fail to get size of file");
     }
   }
 
@@ -91,42 +90,8 @@ private:
   off_t size_;
 };
 ```
-Quite simple, opens a file in read only mode and closes it on destruction.
-We do some basic error handling and implement a move constructor. This is required to store `ReadOnlyFile` inside some STL containers like `std::vector`.
-
-Analogous is the implementation of a buffer type:
-
-```cpp
-class Buffer {
-public:
-  explicit Buffer(off_t size) : size_{size} {
-    buff_ = malloc(size);
-    if (!buff_) {
-      throw std::runtime_error("could not initialize file");
-    }
-  }
-
-  Buffer(Buffer &&other)
-      : buff_{std::exchange(other.buff_, nullptr)},
-      size_{other.size_}
-      {}
-
-  ~Buffer() {
-    if (buff_) {
-      free(buff_);
-    }
-  }
-
-  void *get() const { return buff_; }
-  off_t size() const { return size_; }
-
-private:
-  void *buff_{nullptr};
-  off_t size_;
-};
-```
-
-We will be allocating a buffer per file. This very inefficient. There many ways of reducing the allocation overhead, one can for example make use of arenas (see [region-based memory management](https://en.wikipedia.org/wiki/Region-based_memory_management)) or some other sort of buffer recycling strategy. For simplicity purposes we will stick to one buffer per file, as its irrelevant for the purpose of the post.
+Quite simple, it opens a file in read only mode and closes it on destruction.
+We do some (very clumsy) error handling and implement a move constructor, so that the type can be stored inside some STL containers like `std::vector`.
 
 Another type we will use a lot is `Result`:
 
@@ -137,31 +102,31 @@ struct Result {
   std::string file;          // the file the OBJ was loaded from
 };
 ```
-This is the final result of the parsing of an OBJ file, it contains the final OBJ object, the corresponding file path, as well as the status code of the read call.
+This is the final result of parsing of an OBJ file, it contains the final OBJ object, the corresponding file path, as well as the status code of the read call.
 
 The goal of our program is to load a list of OBJ files and return a `std::vector<Result>`.
 
-# A Trivial Approach
+# First Attempt: A Trivial Approach
 
-Now that we have defined some ground types we can continue with the main dish.
-
+Now that we have laid down some ground work we can continue with the main dish.
 As usual, let's start with the easiest possible implementation: a single-threaded blocking file loader.
 
 ```cpp
 Result readSynchronous(const ReadOnlyFile &file) {
   Result result{.file = file.path()};
-  Buffer buff{file.size()};
-  read(file.fd(), buff.get(), buff.size()); // blocks current thread
+  std::vector<char> buff{file.size()};
+  read(file.fd(), buff.data(), buff.size()); // blocks until finished
   readObjFromBuffer(buff, result.result);
   return result;
 }
 ```
 
-`readSynchronous` receives a file, loads its contents into a buffer, and then parses the data in the buffer into an `OBJ` object. `readObjFromBuffer` wraps around tinyobjloader and initializes the `result` member of `Result`.
+`readSynchronous` receives a file, loads its contents into a buffer and parses the data in the buffer into an `OBJ` object. `readObjFromBuffer` wraps around tinyobjloader and initializes the `result` member of `Result`.
 
 ```cpp
-void readObjFromBuffer(const Buffer &buff, tinyobj::ObjReader &reader) {
-  auto s = std::string((char *)buff.get(), buff.size());
+void readObjFromBuffer(const std::vector<char> &buff, tinyobj::ObjReader &reader) {
+  // tinyobjloader doesn't support std::string_view, so we ms -.-
+  auto s = std::string(buff.data(), buff.size());
   reader.ParseFromString(s, std::string{});
 }
 ```
@@ -185,7 +150,7 @@ The context switches between user and kernel mode are not harmless either, every
 
 We can do better.
 
-# Next Attempt: Use a thread pool
+# Next Attempt: Thread Pool
 
 I know what you are thinking, just parallelize!
 
@@ -204,29 +169,29 @@ std::vector<Result> threadPool(const std::vector<ReadOnlyFile> &files) {
 }
 ```
 
-Here we are using the [thread-pool library](https://github.com/bshoshany/thread-pool) (please go on github and give it some love) to run individual iterations of the for-loop in parallel. Every thread receives a fixed number of iterations, denoted by the range [a,b). You can also use openMP, the idea is the same.
+Here we are using the [thread-pool library](https://github.com/bshoshany/thread-pool) (please go on github and give it some love) to run individual iterations of the for-loop in parallel. Every thread receives a fixed number of iterations, denoted by the range [a,b). You can also use openMP, `std::async`, or `std::thread`, etc. The idea is the same.
 
-This is better, even when the threads are still being blocked on the `read` syscall, we are now processing multiple files in parallel. The overhead in terms of code changes is very small, and it opens further optimization opportunities: we can for example allocate a single buffer per thread that can be reused by multiple files.
+This is better, even when the threads are still being blocked on `read`, we are now processing multiple files in parallel. The overhead in terms of code changes is very small, and it opens further optimization opportunities: we can for example allocate a single buffer per thread that can be reused by multiple files.
 
 For many applications this approach is more than sufficient, but imagine that you developing a web server, listening to hundreds of socket connections at once. Would you create a thread per socket? Probably not. What you need is a way of telling the OS: "I'm interested in these sockets, let me know when any of them has any data to be read". What you need is asynchronous I/O.
 
-# Linux `io_uring`
+# Next Attempt: io_uring
 
-`io_uring` is a new asynchronous I/O API available in the Linux kernel (version 5.1 upwards). This is not the first API of its kind, there are other options available in the kernel, like `epoll`, `poll`, `select` and `aio`, all with their issues and limitations. `io_uring` aims to start a new page and become the standard API for all asynchronous I/O operations in the kernel.
+io_uring is a new asynchronous I/O API available in the Linux kernel (version 5.1 upwards). This is not the first API of its kind, there are other options available in the kernel, like `epoll`, `poll`, `select` and `aio`, all with their issues and limitations. io_uring aims to start a new page and become the standard API for all asynchronous I/O operations in the kernel.
 
-The API is called `io_uring` because its based on two ring buffers: the submission queue and the completion queue. The buffers are shared between user code and the kernel and writing to or reading from them does not require system calls or copies. Ring buffers are an efficient way for implementing FIFO queues.
+The API is called io_uring because its based on two ring buffers: the submission queue and the completion queue. The buffers are shared between user code and the kernel and writing to or reading from them does not require system calls or copies.
 
 The idea is simple: user code writes requests into the submission queue and submits them to the kernel, the kernel consumes the requests in the queue, performs the requested operations, and writes the results into the completion queue. User code can asynchronously retrieve the completed requests from the queue at a later point.
 
 <img src="{{ site.baseurl }}/assets/img/gollum_iouring.png" width="500" height="auto">
 
-The raw API of `io_uring` is a little complex, this is why programs usually use a wrapper library called `liburing` (created by Jens Axboe, original author of `io_uring`), which extracts most of the boilerplate away and provides convenient utilities for using `io_uring`.
+The raw API of io_uring is a little complex, this is why programs usually use a wrapper library called `liburing` (created by Jens Axboe, original author of io_uring), which extracts most of the boilerplate away and provides convenient utilities for using io_uring.
+
+## Parsing OBJs with `liburing`
 
 We will now implement our program using `liburing`.
 
-# Third Attempt: `liburing`
-
-First of all we define a thin wrapper RAII class that initialized an `io_uring` object and frees it upon destruction:
+First of all we define a thin wrapper RAII class that initializes an io_uring object and frees it upon destruction:
 
 ```cpp
 class IOUring {
@@ -253,14 +218,14 @@ private:
 };
 ```
 
-`io_uring_queue_init` initializes an instance of `io_uring` with a given queue size.
+`io_uring_queue_init` initializes an instance of io_uring with a given queue size (this is the size of the ring buffers of the completion and submission queues). `io_uring_queue_exit` destroys an io_uring instance.
 
-The implementation consists of two parts: first we must push the file read requests to the submission queue. Second, we have to wait for completion requests to arrive at the completion queue and parse the contents of the buffer as they come.
+Let's now try to implement our OBJ loader using `liburing`.
 
-We start by creating an `io_uring` instance with enough queue capacity to hold an entry for all files. Next, we must allocate the buffers, one per file.
+The implementation must consist of two parts: first we must push the file read requests to the submission queue. Second, we have to wait for completion requests to arrive at the completion queue and parse the contents of the buffer as they come.
 
 ```cpp
-std::vector<Result> iouring_only(const std::vector<ReadOnlyFile> &files) {
+std::vector<Result> iouringOBJLoader(const std::vector<ReadOnlyFile> &files) {
   IOUring uring{files.size()};
   auto buffs = initializeBuffers(files);
   pushEntriesToSubmissionQueue(files, buffs, uring);
@@ -268,21 +233,23 @@ std::vector<Result> iouring_only(const std::vector<ReadOnlyFile> &files) {
 }
 ```
 
+We start by creating an io_uring instance with enough queue capacity to hold an entry for each file. Next we allocate the buffers, one per file.
+
 `pushEntriesToSubmissionQueue` writes the submission entries into the submission queue:
 
 ```cpp
 void pushEntriesToSubmissionQueue(const std::vector<ReadOnlyFile> &files,
-                                  const std::vector<Buffer> &buffs,
+                                  const std::vector<std::vector<char>> &buffs,
                                   IOUring &uring) {
   for (size_t i = 0; i < files.size(); ++i) {
     struct io_uring_sqe *sqe = io_uring_get_sqe(uring.get());
-    io_uring_prep_read(sqe, files[i].fd(), buffs[i].get(), buffs[i].size(), 0);
+    io_uring_prep_read(sqe, files[i].fd(), buffs[i].data(), buffs[i].size(), 0);
     io_uring_sqe_set_data64(sqe, i);
   }
 }
 ```
 
-`io_uring_get_sqe` creates an entry in the submission queue, `sqe`. We can now set the contents of the submission entry with `io_uring_prep_read`, with specifies that we want the kernel to read the contents of the file pointed to by `files[i].fd()` into the buffer `buffs[i]`.
+`io_uring_get_sqe` creates an entry in the submission queue, `sqe`. We can now set the contents of the submission entry with `io_uring_prep_read`, which specifies that we want the kernel to read the contents of the file pointed to by `files[i].fd()` into the buffer `buffs[i]`.
 
 One can also append user data to the submission entry with `io_uring_sqe_set_data`. This is data that is not used by the kernel but is just copied into the corresponding completion entry of the current request. This is important in order to differentiate which completion entry corresponds to which submission entry. In this case we just write the index of the file, which we can use to reference back when the read operation completes.
 
@@ -290,13 +257,13 @@ After we have written all the submission entries into the queue its time to subm
 
 ```cpp
 std::vector<Result> readEntriesFromCompletionQueue(const std::vector<ReadOnlyFile> &files,
-                                const std::vector<Buffer> &buffs,
+                                const std::vector<std::vector<char>> &buffs,
                                 IOUring &uring) {
   std::vector<Result> results;
   results.reserve(files.size());
+
   while (results.size() < files.size()) {
     io_uring_submit_and_wait(uring.get(), 1);
-
     io_uring_cqe *cqe;
     unsigned head;
     int processed{0};
@@ -311,7 +278,6 @@ std::vector<Result> readEntriesFromCompletionQueue(const std::vector<ReadOnlyFil
 
     io_uring_cq_advance(uring.get(), processed);
   }
-
   return results;
 }
 }
@@ -319,20 +285,23 @@ std::vector<Result> readEntriesFromCompletionQueue(const std::vector<ReadOnlyFil
 
 First we call `io_uring_submit_and_wait`, which submits all entries to the kernel and blocks until at least one completion request has been pushed into the completion queue.
 
-Once we have completion entries in the queue, we can start processing them. `io_uring_for_each_cqe` is a macro whose body gets executed for every completion entry in the completion queue.
+Once we have completion entries in the queue we can start processing them. `io_uring_for_each_cqe` is a macro defined in `liburing` whose body gets executed for every completion entry in the completion queue.
 
-This is what we must do for every completion entry:
+This is what we must do after a completion entry arrives:
 
-1. get index of the file this completion entry corresponds to.
-This is the same id we wrote into the corresponding submission entry.
-2. Write the status code of read call into the `Result` and check it. This is the return code of the `read` operation.
-3. Parse the OBJ from the buffer into the `result` field `Result`.
+1. get the id of the file this completion entry corresponds to. This is the same id we wrote into the corresponding submission entry.
+2. Write the status code into the `Result` object. This is the status code of the `read` operation performed by the kernel.
+3. If the read was successful parse the OBJ from the buffer into the `Result` object.
 
-Finally, we can liberate some space in the submission queue as we have processed some entries. For this we use `io_uring_cq_advance`, which does nothing more than moving head of the ring buffer back by n elements, making room for more entries.
+Finally we can liberate some space in the submission queue as we have processed some completion entries. For this we use `io_uring_cq_advance`, which does nothing more than moving head of the ring buffer back by n elements, making room for more entries.
 
-The first big advantage of this implementation is that we greatly reduced the number of system calls performed. In the synchronous implementations we made a `read` syscall for every file, now we make a single syscall for all the requests in the queue. Reading and writing to the submission and completion queues happens in user space, without switching into kernel mode.
+# Closing Thoughts
 
-This approach is definitely better than the trivial approach, but still has some issues. First, the code is substantially more complex than the synchronous case. And second, our program is CPU-bound! As some profiling shows, most of the time is spent parsing the OBJs:
+The first big advantage of the io_uring implementation is that we greatly reduced the number of system calls performed. In the synchronous implementations we made a `read` syscall for every file, now we make a single syscall for all the requests in the queue. Reading and writing to the submission and completion queues happens in user space, without switching into kernel mode.
+
+This approach still has some issues. First, the code is substantially more complex than the synchronous case, we no longer have a simple synchronous function that reads and parses an OBJ file.
+
+Second, our program is CPU-bound. As some profiling shows, most of the time is spent parsing the OBJs:
 
 ```
   %   cumulative   self
@@ -345,25 +314,21 @@ This approach is definitely better than the trivial approach, but still has some
   ...
   ```
 
-The parsing of the OBJ files still happens on a single thread!
-While processing the submission entries happens in parallel inside the kernel, consuming the completion entries happens in a single thread in user space. We must parallelize the parsing path.
+The parsing of the OBJ files still happens on a single thread.
+While processing the submission entries happens on a thread pool inside the kernel, consuming the completion entries happens in a single thread in user space. Is clear that we must parallelize the parsing path.
 
-In the next part of the series we will try to solve these problems. First, we will rewrite the current implementation by using C++20 coroutines.
+In the next parts of the series we will try to solve these problems. First, we will rewrite the current implementation by using C++20 coroutines.
+
 To give you a sneak peek, we will implement something that looks similar to a function:
 
 ```cpp
-Result loadFile(const ReadOnlyFile &file, IOUring& uring) {
+Result loadOBJFile(const ReadOnlyFile &file, IOUring& uring) {
   // ...
 }
 ```
-but its not **not** a function, its a coroutine! This function will add a read file request to the submission queue but will _immediately suspend execution_, returning to the caller. The coroutine will be waken up and resume execution once the corresponding completion entry arrives into the submission queue.
 
-Afterwards we will improve the implementation so that the coroutines are waken up on a worker thread, conducting the parsing of OBJs in parallel. This is easily achievable with coroutines.
+But its not **not** a function, its a coroutine. This coroutine will add a read file request to the submission queue but will _immediately suspend execution_, returning to the caller. The coroutine will be waken up and resume execution once the corresponding completion entry arrives into the submission queue. This is asynchronous I/O written as synchronous code.
 
-Interested? [Read part 2]()
+In part 3 we will paralellize the parsing path, waking up coroutines in different thread. This will showcase the power of coroutines.
 
-# Todos
-
-strace
-github repo
-reddit discussion
+[Continue with part 2]()
