@@ -3,8 +3,6 @@ layout: post
 title: Vim - Advanced Text Editing For The Lazy
 tags: [vim]
 ---
-1. this unordered seed list will be replaced by the toc
-{:toc .large-only}
 
 Life is nothing but an endless stream of challenges. The past is made out of fought battles and the future never fails to offer new ones.
 But, as Marcus Aurelius once said, never let the future disturb you. You will meet it, if you have to, with the same weapons of reason which today arm you against the present.

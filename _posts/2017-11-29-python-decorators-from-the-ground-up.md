@@ -6,8 +6,6 @@ permalink: python-decorators-from-the-ground-up/
 related_posts:
   - _posts/2018-11-25-python-descriptors.md
 ---
-1. this unordered seed list will be replaced by the toc
-{:toc .large-only}
 
 Decorators are your friends. Despite this they tend to be seen as a rather obscure feature and are often left horribly neglected.
 In this post I will show you that decorators don't need to be complicated and that, when used correctly, can become your MVP in many situations.

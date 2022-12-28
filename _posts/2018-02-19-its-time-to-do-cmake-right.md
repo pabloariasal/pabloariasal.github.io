@@ -3,8 +3,6 @@ layout: post
 title: It's Time To Do CMake Right
 tags: [cpp]
 ---
-1. this unordered seed list will be replaced by the toc
-{:toc .large-only}
 
 Not so long ago I got the task of rethinking our build system. The idea was to evaluate existing components, dependencies, but most importantly, to establish a superior design by making use of modern CMake features and paradigms. Most people I know would have avoided such enterprise at all costs, but there is something about writing find modules that makes my brain release endorphins. I thought I was up for an amusing ride. Boy was I wrong.
 

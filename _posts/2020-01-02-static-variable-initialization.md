@@ -3,8 +3,6 @@ layout: post
 title: C++ - Initialization of Static Variables
 tags: [cpp]
 ---
-1. this unordered seed list will be replaced by the toc
-{:toc .large-only}
 
 Today is the last day of the year. I'm wearing my yellow underwear; it's a new year's tradition in this part of the world. People say it shall bring wealth, luck and happiness for the upcoming twelve months. Growing up, I used to consider it silly to wear yellow underwear on new year's eve. Today I think silly is the one who doesn't.
 
