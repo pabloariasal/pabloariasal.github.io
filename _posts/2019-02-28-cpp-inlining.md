@@ -2,8 +2,9 @@
 layout: post
 title: C++ - Inline Variables and Functions
 tags: [cpp]
-comments: true
 ---
+1. this unordered seed list will be replaced by the toc
+{:toc .large-only}
 
 I've had some free time these days while visiting my parents and little sister in their home in the Colombian Andes. At almost 3000 meters above sea level, it's a very warm place despite the freezing mountain temperatures; full of nostalgic memories and friendly faces. Chaotic but always welcoming.
 

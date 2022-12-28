@@ -3,13 +3,16 @@ layout: post
 title: Python Decorators From the Ground Up
 tags: [python]
 permalink: python-decorators-from-the-ground-up/
-comments: true
+related_posts:
+  - _posts/2018-11-25-python-descriptors.md
 ---
+1. this unordered seed list will be replaced by the toc
+{:toc .large-only}
 
 Decorators are your friends. Despite this they tend to be seen as a rather obscure feature and are often left horribly neglected.
-In this post I will show you that decorators don't need to be complicated and that, when used correctly, can become your MVP in many situations.  
+In this post I will show you that decorators don't need to be complicated and that, when used correctly, can become your MVP in many situations.
 
-I won't just tell you what decorators are, but rather build a bottom up journey where we assemble a decorator from scratch, step by step. I'll visit the different ideas that make up the decorator idiom and the specific issues they aim to solve. Hopefully by the end of your reading you will be able to identify the scenarios where decorators excel and the reason they became part of the python language.  
+I won't just tell you what decorators are, but rather build a bottom up journey where we assemble a decorator from scratch, step by step. I'll visit the different ideas that make up the decorator idiom and the specific issues they aim to solve. Hopefully by the end of your reading you will be able to identify the scenarios where decorators excel and the reason they became part of the python language.
 
 Let's begin with a very realistic example.
 
@@ -25,11 +28,11 @@ def hottie_lookup(search_criteria):
     print('Querying hotties database...')
     search_results = []
     #Simulate patended algorithm to find hot singles in your area
-    time.sleep(2) 
+    time.sleep(2)
     return search_results
 ~~~
 
-In no time your platform becomes very popular. Even though people really seem love it, you have heard some complaints about long response times. 
+In no time your platform becomes very popular. Even though people really seem love it, you have heard some complaints about long response times.
 You decide to measure the execution time of your love algorithm:
 
 ~~~python
@@ -41,7 +44,7 @@ def hottie_lookup(search_criteria):
 
     print('Querying hotties database...')
     search_results = []
-    time.sleep(2) 
+    time.sleep(2)
     #Simulate patended algorithm to find hot singles in your area
 
     print("Request took {:.1f}s".format(time.time()-current_time))
@@ -49,7 +52,7 @@ def hottie_lookup(search_criteria):
     return search_results
 ~~~
 
-After the great success you decide that it would be useful to gather some usage statistics: 
+After the great success you decide that it would be useful to gather some usage statistics:
 What are the most popular searching criteria (besides hotness off course)? What are the most popular singles in town?
 
 For this you decide to log every received request and its corresponding response:
@@ -65,7 +68,7 @@ def hottie_lookup(search_criteria):
     print('Querying hotties database...')
     search_results = []
     #Simulate patented algorithm to find hot singles in your area
-    time.sleep(2) 
+    time.sleep(2)
 
     print("Request took {:.1f}s".format(time.time()-current_time))
     print("Matching entries found:", search_results)
@@ -83,11 +86,11 @@ def gardener_lookup(search_criteria):
 
     print("Request was made", search_criteria)
     current_time = time.time()
-    
+
     print('Querying gardeners database...')
     search_results = []
     #Simulate patended algorithm to find skillful gardeners in town
-    time.sleep(2) 
+    time.sleep(2)
 
     print("Request took {:.1f}s".format(time.time()-current_time))
     print("Matching entries found:", search_results)
@@ -122,7 +125,7 @@ import time
 def hottie_lookup_timed(search_criteria):
     current_time = time.time()
     # Call original unchanged hottie_lookup
-    search_results = hottie_lookup(search_criteria) 
+    search_results = hottie_lookup(search_criteria)
     print("Request took {:.1f}s".format(time.time()-current_time))
     return search_results
 ~~~
@@ -133,7 +136,7 @@ But what about request and response logging? we could write a wrapper function o
 ~~~python
 def hotties_lookup_logged(search_criteria):
     print("Request was made:", search_criteria)
-    search_results = hottie_lookup_timed(search_criteria) 
+    search_results = hottie_lookup_timed(search_criteria)
     print("Matching entries found:", search_results)
     return search_results
 ~~~
@@ -141,12 +144,12 @@ def hotties_lookup_logged(search_criteria):
 Awesome! Now `hottie_lookup()` is back to its original implementation and free of extra work.
 
 All we need to do now is search/replace all calls to `hottie_lookup()` with `hotties_lookup_logged()`, so that every time the service is executed the wrapper function is called instead.
-Sure, but if we want to add an extra wrapper? Then we would need to rename all function calls again :/. 
+Sure, but if we want to add an extra wrapper? Then we would need to rename all function calls again :/.
 Sure we can do better.
 
 # Functions Are First Class Citizens
 
-By enclosing our lookup functions inside a wrapper, we were able to perform timing and logging by leaving the original implementations unchanged. This is a step in the right direction, but there are still some issues to solve. 
+By enclosing our lookup functions inside a wrapper, we were able to perform timing and logging by leaving the original implementations unchanged. This is a step in the right direction, but there are still some issues to solve.
 
 First off all, we completely forgot about the gardener search, that function needs to be decorated as well!
 Sure we can repeat the same trick, but we would end up having two functions, `gardener_lookup_timed()` and a `gardener_lookup_logged()` that would be practically the same their hottie search versions.
@@ -243,7 +246,7 @@ Querying hotties database...
 Request took 2.0 seconds
 ~~~
 
-This idiom is so common that it has its own built-in language syntax. 
+This idiom is so common that it has its own built-in language syntax.
 
 The expression:
 
@@ -293,7 +296,7 @@ def hottie_lookup(search_criteria):
     print('Querying hotties database...')
     search_results = []
     #Simulate patended algorithm to find hottes singles in your area
-    time.sleep(2) 
+    time.sleep(2)
     return search_results
 
 @logger
@@ -302,7 +305,7 @@ def gardener_lookup(search_criteria):
     print('Querying gardeners database...')
     search_results = []
     #Simulate patended algorithm to find skilful gardeners in town
-    time.sleep(2) 
+    time.sleep(2)
     return search_results
 ~~~
 

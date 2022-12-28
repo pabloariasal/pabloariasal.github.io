@@ -1,9 +1,10 @@
 ---
 layout: post
 title: Understandig Virtual Tables in C++
-comments: true
 tags: [cpp]
 ---
+1. this unordered seed list will be replaced by the toc
+{:toc .large-only}
 
 > "A virtual method table (VMT),..., is a mechanism used in a programming language to support dynamic dispatch." --[Wikipedia](https://en.wikipedia.org/wiki/Virtual_method_table)
 {:.lead}

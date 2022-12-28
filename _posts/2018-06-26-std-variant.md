@@ -1,9 +1,10 @@
 ---
 layout: post
 title: std::variant Doesn't Let Me Sleep
-comments: true
 tags: [cpp]
 ---
+1. this unordered seed list will be replaced by the toc
+{:toc .large-only}
 
 Where I come from we have a saying that I like very much: *de la risa al llanto*, which translates to *from laughter to tears*. It's used in situations that appear beneficial at first, but end up turning into a curse; when the line between the bad and the good dissipates, when the dream becomes the nightmare.
 

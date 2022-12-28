@@ -19,6 +19,7 @@ GEM
     concurrent-ruby (1.1.10)
     dnsruby (1.61.9)
       simpleidn (~> 0.1)
+    duktape (2.6.0.0)
     em-websocket (0.5.3)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0)
@@ -114,6 +115,8 @@ GEM
       commonmarker (~> 0.17.6)
       jekyll-commonmark (~> 1.2)
       rouge (>= 2.0, < 4.0)
+    jekyll-compose (0.12.0)
+      jekyll (>= 3.7, < 5.0)
     jekyll-default-layout (0.1.4)
       jekyll (~> 3.0)
     jekyll-feed (0.15.1)
@@ -123,6 +126,8 @@ GEM
     jekyll-github-metadata (2.13.0)
       jekyll (>= 3.4, < 5.0)
       octokit (~> 4.0, != 4.4.0)
+    jekyll-include-cache (0.2.1)
+      jekyll (>= 3.7, < 5.0)
     jekyll-mentions (1.6.0)
       html-pipeline (~> 2.3)
       jekyll (>= 3.7, < 5.0)
@@ -251,27 +256,20 @@ GEM
       unf_ext
     unf_ext (0.0.8.2)
     unicode-display_width (1.8.0)
+    webrick (1.7.0)
     zeitwerk (2.6.6)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  github-pages (~> 213)
-  jekyll-avatar
-  jekyll-default-layout
+  duktape
+  github-pages
+  jekyll (~> 3.8)
+  jekyll-compose
   jekyll-feed
-  jekyll-gist
-  jekyll-optional-front-matter
-  jekyll-paginate
-  jekyll-readme-index
-  jekyll-redirect-from
-  jekyll-relative-links
-  jekyll-remote-theme
-  jekyll-seo-tag
-  jekyll-sitemap
-  jekyll-titles-from-headings
-  tzinfo-data
+  jekyll-include-cache
+  webrick
 
 BUNDLED WITH
    2.3.18

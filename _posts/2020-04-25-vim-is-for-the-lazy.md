@@ -1,9 +1,10 @@
 ---
 layout: post
 title: Vim - Advanced Text Editing For The Lazy
-comments: true
 tags: [vim]
 ---
+1. this unordered seed list will be replaced by the toc
+{:toc .large-only}
 
 Life is nothing but an endless stream of challenges. The past is made out of fought battles and the future never fails to offer new ones.
 But, as Marcus Aurelius once said, never let the future disturb you. You will meet it, if you have to, with the same weapons of reason which today arm you against the present.
@@ -180,7 +181,7 @@ In other words, we have to match every line that contains a `MOCK_METHOD` but do
 The regex will match a macro of the form:
 
 ```
-MOCK_METHOD1(Foo, 
+MOCK_METHOD1(Foo,
         bool(int))
 ```
 as it doesn't end with a semicolon, but will ignore this:

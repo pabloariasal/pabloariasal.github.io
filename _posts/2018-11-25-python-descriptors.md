@@ -2,8 +2,11 @@
 layout: post
 title: Python Descriptors Are Magical Creatures
 tags: [python]
-comments: true
+related_posts:
+  - _posts/2017-11-29-python-decorators-from-the-ground-up.md
 ---
+1. this unordered seed list will be replaced by the toc
+{:toc .large-only}
 
 > It is clear to me that maintaining a popular helper is not worth the time nor the hassle. Without entering into details, this has become an unpaid job I dislike more and more - and I've been talking about it for far too long too. As such, this project is now unmaintained.
 

@@ -1,9 +1,10 @@
 ---
 layout: post
 title: It's Time To Do CMake Right
-comments: true
-tags: [cmake,cpp]
+tags: [cpp]
 ---
+1. this unordered seed list will be replaced by the toc
+{:toc .large-only}
 
 Not so long ago I got the task of rethinking our build system. The idea was to evaluate existing components, dependencies, but most importantly, to establish a superior design by making use of modern CMake features and paradigms. Most people I know would have avoided such enterprise at all costs, but there is something about writing find modules that makes my brain release endorphins. I thought I was up for an amusing ride. Boy was I wrong.
 
@@ -14,7 +15,7 @@ Many of the concepts presented here find their roots in Daniel Pfeifer's masterp
 Enough preambles. Does this look familiar to you?
 
 ~~~cmake
-find_package(Boost 1.55 COMPONENTS asio) 
+find_package(Boost 1.55 COMPONENTS asio)
 list(APPEND INCLUDE_DIRS ${BOOST_INCLUDE_DIRS})
 list(APPEND LIBRARIES ${BOOST_LIBRARIES})
 
@@ -22,11 +23,11 @@ include_directories(${INCLUDE_DIRS})
 link_libraries(${LIBRARIES})
 ~~~
 
-Don't. Just don't. This is wrong in so many dimensions. You are just blindly throwing stuff into a pot of include directories and compiler flags. There is no structure. There is no transparency. Not to mention that functions like `include_directories` work at the directory level and apply to all entities defined in scope. 
+Don't. Just don't. This is wrong in so many dimensions. You are just blindly throwing stuff into a pot of include directories and compiler flags. There is no structure. There is no transparency. Not to mention that functions like `include_directories` work at the directory level and apply to all entities defined in scope.
 
 And this isn't even the real problem, what do you do with transitive dependencies? What about the order of linking? Yes, you need to take care about that yourself. The moment you need to deal with the dependencies of your dependencies is the moment your life needs to be reevaluated.
 
-# Targets and Properties 
+# Targets and Properties
 
 CMake developers saw the aforementioned problems and introduced language features that allow you to better structure your projects. Modern CMake is all about targets and properties. Conceptually this isn't complicated. Targets model the components of you application. An executable is a target, a library is a target. Your application is built as a collection of targets that depend on and use each other.
 
@@ -40,7 +41,7 @@ Interface properties have the prefix, wait for it, *INTERFACE_* prepended to the
 
 For example, the property **COMPILE_OPTIONS** encodes a list of options to be passed to the compiler when building the target. If a target must be built with all warnings enabled, for instance, this list should contain the option `-Wall`. This is a private property used only when building the target and won't affect its users in any way.
 
-On the other hand, the property **INTERFACE_COMPILE_FEATURES** stores which features must be supported by the compiler when building *users* of the target. For instance, if the public header of a library contains a variadic function template, this property should contain the feature `cxx_variadic_templates`. This instructs CMake that applications including this header will have to be built by a compiler that understands variadic templates. 
+On the other hand, the property **INTERFACE_COMPILE_FEATURES** stores which features must be supported by the compiler when building *users* of the target. For instance, if the public header of a library contains a variadic function template, this property should contain the feature `cxx_variadic_templates`. This instructs CMake that applications including this header will have to be built by a compiler that understands variadic templates.
 
 Properties can also be specified as **PUBLIC**. Public properties are defined in both **PRIVATE** and **INTERFACE** scopes.
 
@@ -93,8 +94,8 @@ Now let's define some properties on our target. Why not start with the include d
 
 ~~~cmake
 target_include_directories(JSONUtils
-    PUBLIC 
-        $<INSTALL_INTERFACE:include>    
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -126,7 +127,7 @@ Note that there is no reason to manually append `-std=c++11` to **CMAKE_CXX_FLAG
 
 # Model dependencies with `target_link_libraries`
 
-Let's think about our dependencies. First off all, we need boost, as we use optional. Additionally, in order to figure out if the passed string is an URL, we have to evaluate it against some regex, so we need boost::regex (yes I know c++11 introduces regex utilities but bear with me). Second, we need rapidjson.  
+Let's think about our dependencies. First off all, we need boost, as we use optional. Additionally, in order to figure out if the passed string is an URL, we have to evaluate it against some regex, so we need boost::regex (yes I know c++11 introduces regex utilities but bear with me). Second, we need rapidjson.
 
 In CMake, `target_link_libraries` is used to model dependencies between targets.
 
@@ -156,7 +157,7 @@ Isn't this beautiful? Usage requirements are propagated and build requirements e
 
 Note that `Boost::boost` and `RapidJSON::RapidJSON` are targets themselves. But where did they come from? I haven't told you the most breathtaking fact about targets yet: targets can be exported. Exported targets can be later imported into other projects.
 
-When we call `find_package(Boost 1.55 REQUIRED COMPONENTS regex)`, CMake will execute `FindBoost.cmake`, where the targets `Boost::boost` and `Boost::regex` will be imported, allowing us to depend on them via `target_link_libraries()`. 
+When we call `find_package(Boost 1.55 REQUIRED COMPONENTS regex)`, CMake will execute `FindBoost.cmake`, where the targets `Boost::boost` and `Boost::regex` will be imported, allowing us to depend on them via `target_link_libraries()`.
 
 Our projects have structure, as they are build as a collection of encapsulated targets, and CMake handles transitive requirements for us. You might be wondering with tears in your eyes how beautiful life can be, but boy are up for a revelation.
 
@@ -263,7 +264,7 @@ install(TARGETS JSONUtils
 )
 ~~~
 
-In CMake, installed targets are registered to exports using the **EXPORT** argument. Exports are therefore just a set of targets that can be exported and installed. 
+In CMake, installed targets are registered to exports using the **EXPORT** argument. Exports are therefore just a set of targets that can be exported and installed.
 Here we just told CMake to install our library and to register the target in the export *jsonutils-export*.
 
 Then we can go ahead and install the export that we defined above:
@@ -316,6 +317,6 @@ This is why we need to call `find_dependency()` in `JSONUtilsConfig.cmake`: to m
 
 # That's all folks
 
-You can refer to my [github](https://github.com/pabloariasal/modern-cmake-sample) where I have uploaded the entire jsonutils project containing all the code shown in this post. There I also included examples on how to test the library using gtest, as well as how to export your targets from the build tree and register them in CMake's package registry. 
+You can refer to my [github](https://github.com/pabloariasal/modern-cmake-sample) where I have uploaded the entire jsonutils project containing all the code shown in this post. There I also included examples on how to test the library using gtest, as well as how to export your targets from the build tree and register them in CMake's package registry.
 
 Hopefully by now you were able to grasp how clean and structured a target-based CMake can be compared to a flag and variable based approach. Also, exporting your targets is something your grandma could do, so why not do it? I believe the reason is that CMake suffers from a syndrome of "if no one does it why should I?" We need to change this. We deserve to live in a better world. Export your targets goddammit.

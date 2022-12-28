@@ -2,8 +2,9 @@
 layout: post
 title: C++ - Initialization of Static Variables
 tags: [cpp]
-comments: true
 ---
+1. this unordered seed list will be replaced by the toc
+{:toc .large-only}
 
 Today is the last day of the year. I'm wearing my yellow underwear; it's a new year's tradition in this part of the world. People say it shall bring wealth, luck and happiness for the upcoming twelve months. Growing up, I used to consider it silly to wear yellow underwear on new year's eve. Today I think silly is the one who doesn't.
 
@@ -79,7 +80,7 @@ struct MyStruct
 {
     static int a;
 };
-int MyStruct::a = 67; 
+int MyStruct::a = 67;
 ```
 
 Here, `MyStruct::a` will be const-initialized, because `67` is a compile
@@ -230,7 +231,7 @@ in `a.cpp` depends on another one defined `b.cpp` . This is called
 the [Static Initialization Order Fiasco](https://isocpp.org/wiki/faq/ctors#static-init-order).
 Consider this example:
 
-```cpp 
+```cpp
 // a.cpp
 int duplicate(int n)
 {
@@ -239,7 +240,7 @@ int duplicate(int n)
 auto A = duplicate(7); // A is dynamic-initialized
 ```
 
-```cpp 
+```cpp
 // b.cpp
 #include <iostream>
 
@@ -269,7 +270,7 @@ fiasco.
 
 Encountering the static initialization order fiasco is often a symptom of poor software design. IMHO the best way to solve it is by refactoring the code to break the initialization dependency of globals across compilation units. Make your modules self-contained and strive for constant initialization.
 
-If refactoring is not an option, one common solution is the [Initialization On First Use](https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use). The basic idea is to design your static variables that are not constant expressions (i.e. those that must be initialized at runtime) in a way that they are created *when they are accessed for the first time*. This approach uses a static local variable inspired by the [Meyer's Singleton](http://laristra.github.io/flecsi/src/developer-guide/patterns/meyers_singleton.html). 
+If refactoring is not an option, one common solution is the [Initialization On First Use](https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use). The basic idea is to design your static variables that are not constant expressions (i.e. those that must be initialized at runtime) in a way that they are created *when they are accessed for the first time*. This approach uses a static local variable inspired by the [Meyer's Singleton](http://laristra.github.io/flecsi/src/developer-guide/patterns/meyers_singleton.html).
 With this strategy it is possible to control the time when static variables are initialized at runtime, avoiding use-before-init.
 
 ```cpp

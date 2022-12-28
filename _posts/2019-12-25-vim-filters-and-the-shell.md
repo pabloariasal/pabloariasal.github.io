@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Vim Filters, External Programs, And The Shell
-comments: true
 tags: [vim]
 ---
 
