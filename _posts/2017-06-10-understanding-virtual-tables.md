@@ -88,7 +88,7 @@ The _vtable_ contains an entry for each virtual function accessible by the class
 
 In our example, the compiler will create the following virtual tables:
 
-![vtables]({{ site.baseurl }}/assets/img/vtables.png "vtables")
+![vtables](/assets/img/posts/vtables/vtables.png "vtables")
 
 The vtable of class `B` has two entries, one for each of the two virtual functions declared in `B`'s scope: `bar()` and `qux()`. Additionally, the _vtable_ of `B` points to the local definition of functions, since they are the most specific (and only) from `B`'s point of view.
 
@@ -103,7 +103,7 @@ When the compiler sees `b->bar()` in the example above, it will lookup `B`'s _vt
 
 Very true, I still need to tell the second part of the story: _vpointers_. Every time the compiler creates a _vtable_ for a class, it adds an extra argument to it: a pointer to the corresponding virtual table, called the _vpointer_.
 
-![vpointer]({{ site.baseurl }}/assets/img/vpointer.png "vpointer")
+![vpointer](/assets/img/posts/vtables/vpointer.png "vpointer")
 
 Note that the _vpointer_ is just another class member added by the compiler and increases the size of every object that has a _vtable_ by `sizeof(vpointer)`.
 
