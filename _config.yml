@@ -76,7 +76,7 @@ menu:
 copyright:             © 2023. All rights reserved.
 
 # Format of the permalinks
-permalink:             /:categories/:year/:month/:day/:title/
+permalink:             pretty
 
 # Pagination configuration (used by the `blog` layout)
 paginate:              10
