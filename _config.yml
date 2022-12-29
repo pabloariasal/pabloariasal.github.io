@@ -49,7 +49,7 @@ author:
 
 # Add links to the sidebar.
 menu:
-  - title:             All
+  - title:             All Posts
     url:               /all/
   - title:             C++
     url:               /tag-cpp/
