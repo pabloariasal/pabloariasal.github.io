@@ -4,7 +4,7 @@ title: std::variant Doesn't Let Me Sleep
 tags: [cpp]
 ---
 
-Where I come from we have a saying that I like very much: *de la risa al llanto*, which translates to *from laughter to tears*. It's used in situations that appear beneficial at first, but end up turning into a curse; when the line between the bad and the good dissipates, when the dream becomes the nightmare.
+There is a saying in Spanish that I like very much: *de la risa al llanto*, which translates to *from laughter to tears*. It's used in situations that appear beneficial at first, but end up turning into a curse; when the line between the bad and the good dissipates, when the dream becomes the nightmare.
 
 Last month I attended a talk by Juanpe Bolivar: [the most valuable values](https://www.youtube.com/watch?v=NMol_5-2owo). In his talk he made use of C++17's new sum type proposal: `std::variant`. Sum types are objects that can vary their type dynamically.
 A `std::variant` is similar to a union: it allocates a fixed portion of memory and reuses it to hold a value of one of several predefined alternative types at a time:
