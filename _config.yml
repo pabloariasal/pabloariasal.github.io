@@ -44,7 +44,7 @@ author:
   # Used by `jekyll-feed`:
   name:                Pablo Arias
   email:               pabloariasal@gmail.com
-  # # Used by `jekyll-seo-tag`:
+  # Used by `jekyll-seo-tag`:
   twitter:             pabloariasal
 
 # Add links to the sidebar.
@@ -334,7 +334,7 @@ plugins:
   - jekyll-include-cache
   - jekyll-last-modified-at
   - jekyll-include-cache
-  - jekyll-paginate
+  - jekyll-avatar
 
 
 # SEO Tag

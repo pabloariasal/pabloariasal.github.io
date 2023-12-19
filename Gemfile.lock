@@ -273,9 +273,11 @@ DEPENDENCIES
   duktape
   github-pages
   jekyll (~> 3.8)
+  jekyll-avatar
   jekyll-compose
   jekyll-feed
   jekyll-include-cache
+  jekyll-paginate
   webrick
 
 BUNDLED WITH
