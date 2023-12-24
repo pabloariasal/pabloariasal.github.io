@@ -210,7 +210,7 @@ By using bare repos and git worktrees you can separate the contents of the repo 
 
 If you are like me, you probably store all your configuration files in a git repo (we spent too many hours configuring our systems for these files to be lost).
 
-The problem is that the dotfiles must be placed inside the home folder, something like `~/.config/my_config.conf`. So how can we solve this? One can for example initialize a git repo inside of the home folder, but this causes countless issues. Many people use [GNU Stow]() to symlink files from the dotfiles repo to the home folder.
+The problem is that the dotfiles must be placed inside the home folder, something like `~/.config/my_config.conf`. So how can we solve this? One can for example initialize a git repo inside of the home folder, but this causes countless issues. Many people use [GNU Stow](https://www.gnu.org/software/stow/) to symlink files from the dotfiles repo to the home folder.
 
 There is another way to manage your dotfiles using git worktrees:
 
