@@ -38,9 +38,9 @@ Besides the `.git` folder, the git repo also contains some files like `LICENSE` 
 
 Per default `git init` or `git clone` initializes a worktree in the repo's directory, along with metadata under the `.git` subfolder.
 
-<img src="/assets/img/posts/git_worktree/always_has_been.jpg" width="600" height="auto">
+<img src="/assets/img/posts/git_worktree/always_has_been.jpg" width="700" height="auto">
 
-# Decoupling The Repo's Metadata
+# Decoupling the Metadata
 
 We can list the worktrees in a repo using the `git worktree list` command:
 
@@ -91,7 +91,7 @@ A bare repo behaves to some extend like a normal git repo, one can perform some 
 * master
 ```
 
-One can created and list branches, now let's try to clone `my_branch` in our bare repo:
+One can created and list branches, now let's try to checkout the branch `my_branch` in our bare repo:
 
 ```sh
 > git checkout my_branch
