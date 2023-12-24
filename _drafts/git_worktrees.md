@@ -5,12 +5,11 @@ title: Understanding Git Worktrees
 
 # Understanding Git Worktrees
 
-Even though extremely useful, git worktree remains an obscure and poorly understood git feature. In this post we will explore git worktrees and showcase how they can improve your git workflow, for example for managing your dotfiles.
+Even though very useful, `git worktree` remains an obscure and poorly understood git command. In this post I'll explain what git worktrees are and how they can greatly improve your git workflow.
 
 # What is a git worktree?
 
 But what is even a git worktree?
-
 Funny that you ask, you have been using git worktrees the whole time!
 
 If we clone a repo and inspect its contents:
@@ -41,7 +40,7 @@ Per default `git init` or `git clone` initializes a worktree in the repo's direc
 
 <img src="/assets/img/posts/git_worktree/always_has_been.jpg" width="600" height="auto">
 
-# Multiple Worktrees
+# Decoupling The Repo's Metadata
 
 We can list the worktrees in a repo using the `git worktree list` command:
 
@@ -106,9 +105,9 @@ We can not really checkout a branch, nor stage any files, we need a worktree for
 
 Let's fix that, let's add a worktree to our bare repo!
 
-# Adding Worktrees
+# Adding a Worktree
 
-`git worktree add` can be used to add a worktree to an existing git repo (it doesn't need to be a bare repo).
+The command `git worktree add` can be used to add a worktree to an existing git repo (it doesn't need to be a bare repo).
 
 ```sh
 > cd my_repo.git
