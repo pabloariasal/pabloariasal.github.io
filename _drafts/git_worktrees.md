@@ -40,7 +40,7 @@ Per default `git init` or `git clone` initializes a worktree in the repo's direc
 
 <img src="/assets/img/posts/git_worktree/always_has_been.jpg" width="700" height="auto">
 
-# Decoupling the Metadata
+# Decoupling Data and Metadata
 
 We can list the worktrees in a repo using the `git worktree list` command:
 
@@ -193,9 +193,9 @@ Here you have are two options:
 
 Both options are annoying, specially if you work on many different branches at once daily.
 
-With git worktrees this problem is solved: just create a new worktree for the hotfix branch in a different folder and do all the fixes there, your current work will remain untouched.
+With git worktrees this problem a lot easier: just create a new worktree for the hotfix branch in a different folder! You can switch to the new folder, do all the fixes there and push.
 
-After you are done with the fixes just remove the worktree.
+After you are done with the fixes, remove the worktree and go back to the original working tree, it will all be just as you left it.
 
 ## Detached Worktree - Managing dotfiles
 
