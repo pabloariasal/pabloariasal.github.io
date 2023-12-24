@@ -225,3 +225,7 @@ A detailed explanation of how to achieve this can be found [here](https://www.at
 - A repo can have any number of worktrees (even zero)
 - Two different branches can be checked out in two different worktrees (in different folders)
 - A branch can only be checked out once for every repo
+
+# Discussion
+
+[![](/assets/img/reddit_large.png)](https://www.reddit.com)
