@@ -1,9 +1,9 @@
 ---
 layout: post
-title: Understanding git worktree
+title: Understanding Git Worktrees
 ---
 
-# Understanding git worktree
+# Understanding Git Worktrees
 
 Even though extremely useful, git worktree remains an obscure and poorly understood git feature. In this post we will explore git worktrees and showcase how they can improve your git workflow, for example for managing your dotfiles.
 
@@ -60,7 +60,7 @@ yes! even though most of the time we work on repos containing of a single worktr
 ## Bare Repos
 
 When I say that a git repo can have any number of worktrees, I mean it.
-In fact, a git repo can have even _zero_ worktrees, this is known as a *bare repo*.
+In fact, a git repo can have _zero_ worktrees, this is known as a *bare repo*.
 
 We can clone a bare repo by passing the `--bare` flag to `git clone`:
 
@@ -212,3 +212,8 @@ There is another way to manage your dotfiles using git worktrees:
 2. Checkout the worktree in your home folder.
 
 A detailed explanation of how to achieve this can be found [here](https://www.atlassian.com/git/tutorials/dotfiles).
+
+# The End
+
+- Git worktrees are an amazing feature of git
+- They solve one of the most annoying limitations of git: having to check two branches at the same time
