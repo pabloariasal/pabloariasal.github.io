@@ -212,10 +212,10 @@ If you are like me, you probably store all your configuration files in a git rep
 
 The problem is that the dotfiles must be placed inside the home folder, something like `~/.config/my_config.conf`. So how can we solve this? One can for example initialize a git repo inside of the home folder, but this causes countless issues. Many people use [GNU Stow](https://www.gnu.org/software/stow/) to symlink files from the dotfiles repo to the home folder.
 
-There is another way to manage your dotfiles using git worktrees:
+There is another way to manage your dotfiles:
 
 1. Clone your dotfiles repo as bare somewhere in the filesystem
-2. Checkout the worktree in your home folder.
+2. Checkout the worktree in your home folder
 
 A detailed explanation of how to achieve this can be found [here](https://www.atlassian.com/git/tutorials/dotfiles).
 
@@ -223,5 +223,5 @@ A detailed explanation of how to achieve this can be found [here](https://www.at
 
 - A git worktree consists of the files we work on
 - A repo can have any number of worktrees (even zero)
+- Two different branches can be checked out in two different worktrees (in different folders)
 - A branch can only be checked out once for every repo
-- Two different branches can be checked out in two different worktrees
