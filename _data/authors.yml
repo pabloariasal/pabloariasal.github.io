@@ -8,8 +8,8 @@ author1:
   # Used at the bottom of each page and at the top of the `about` layout
   # Markdown enabled, can use multiple paragraphs (enabled by `|`)
   about:             |
-    Hello! My name is Pablo and I'm a software engineer living in Munich.
-    Besides programming I'm crazy about football and books.
+    I'm Pablo, a software engineer living in Munich.
+    Please send me an email if you find errors in a post or want to give me feedback, its always apreciated.
 
   # This photo will be used in the about section
   # picture:
