@@ -25,5 +25,9 @@ group :jekyll_plugins do
   gem "jekyll-avatar"
 end
 
+# Fixes error: `require': cannot load such file -- json (LoadError)
+# remove once fixed upstream
+gem "json"
+
 gem 'wdm' if Gem.win_platform?
 gem "tzinfo-data" if Gem.win_platform?
