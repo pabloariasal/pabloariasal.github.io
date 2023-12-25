@@ -5,7 +5,7 @@ title: Understanding Git Worktrees
 
 # Understanding Git Worktrees
 
-Last week I bought a Christmas tree. It has become a tradition of mine since I moved to a place big enough to hold one (in other words since last year). While carrying my new acquisition through the snowy streets, the comforting smell of freshly cut pine reminded me of how much I like trees, specially git worktrees.
+Last week I bought a Christmas tree. It's not the tallest, nor the bushiest, it even is kinda crooked, but it gets the work done. While carrying my new acquisition through the snowy streets, the comforting smell of freshly cut pine reminded me of how much I like trees, specially git worktrees.
 
 Despite being very useful, `git worktree` remains an obscure and poorly understood git command. In this post I'll explain what git worktrees are and how they can greatly improve your git workflow, specially if you have to work on multiple branches at the same time.
 
@@ -26,7 +26,7 @@ README.md
 
 We can see two different things contained within:
 
-1. A hidden folder called `.git`
+1. A folder called `.git`
 2. Files like `LICENSE` and `README.md`
 
 The `.git` folder contains the git metadata. Every git repo has one and it contains all the information needed by git to work: branches, commits, config, remotes, etc. This directory is hidden to the user and should never be manipulated directly (unless you screwed up really bad).
@@ -38,13 +38,13 @@ $ ls -a .git
 branches  config  description  HEAD  hooks  index  info  logs  objects  packed-refs  refs
 ```
 
-Besides the `.git` folder, the git repo also contains some files like `LICENSE` and `README.md`: the actual content of the repo. These are the files and directories tracked by git: the files we *work on*, this is the git worktree!
+Besides the `.git` folder, the git repo also contains some files like `LICENSE` and `README.md`: the actual contents of the repo. These are the files and directories tracked by git: the files we *work on*, this is the git worktree!
 
-Per default `git init` or `git clone` initializes a worktree in the repo's directory, along with metadata under the `.git` subfolder. In other words all git repos are initialized with a single worktree.
+Per default `git init` or `git clone` initializes a worktree in the repo's directory, along with metadata under the `.git` subfolder. Hence each repo has one worktree per default.
 
 <img src="/assets/img/posts/git_worktree/always_has_been.jpg" width="700" height="auto">
 
-# The Tree Becomes a Forest
+# Work~~tree~~forest
 
 We can list the worktrees in a repo using the `git worktree list` command:
 
@@ -60,7 +60,7 @@ But can we have more than a worktree?
 
 Yes! Even though most of the time we work on repos containing of a single worktree, a repo can have any number of worktrees, each one with a different branch checked out.
 
-## Git Bare Repo
+## Bare Repositories
 
 When I say that a git repo can have any number of worktrees, I mean it.
 In fact, a git repo can have zero worktrees, this is known as a *bare repo*.
@@ -109,7 +109,7 @@ We can not really checkout a branch, nor stage any files, we need a worktree for
 
 Let's fix that, let's add a worktree to our bare repo!
 
-# Creating a Worktree
+# Creating Worktrees
 
 The command `git worktree add` can be used to add a worktree to an existing git repo (it doesn't need to be a bare repo).
 
@@ -132,7 +132,7 @@ We see that the repo has a worktree located in `/tmp/my_worktree` and has the br
 We can also see that the metadata of the repo is located at `/tmp/my_repo.git` , listed as "`(bare)`".
 
 
-## Adding more trees
+## Adding More Trees
 
 Now we can add more worktrees to our repo:
 
@@ -163,7 +163,7 @@ $ git worktree list
 /tmp/my_second_worktree                  84424a2 [some_branch]
 ```
 
-We have two branches checked out in two different worktrees: `master` in the worktree `/tmp/my_worktree` and `some_branch` in the one in `/tmp/my_second_worktree`. Both branches belong to the same repo.
+We have two branches checked out in two different worktrees: `master` in the worktree at `/tmp/my_worktree` and `some_branch` in the one at `/tmp/my_second_worktree`.
 
 # Removing a Worktree
 
@@ -195,24 +195,24 @@ You have to check out the master branch, reproduce the problem locally and creat
 
 Now you have two options:
 
-1. Commit all the (unfinished) current changes and switch to the `master` branch
+1. Commit all the (unfinished) current changes to the feature branch and switch to the `master` branch
 1. Stash your changes, switch to `master` and then apply the changes again when done.
 
 Both options are annoying, specially if you work on many different branches at the same time daily.
 
-With git worktrees this becomes a lot easier: just create a new worktree with the hotfix branch! You can switch to the new folder, do all the fixes there. You have now two folders, one for each branch.
+With git worktrees this becomes a lot easier: just create a new worktree for the hotfix branch! All the fixes are done in a new folder and the current work remains untouched.
 
-After you are done with the hotfix, remove the worktree and continue working on the new feature, the work you were doing will be intact.
+After you are done with the hotfix, remove the worktree and continue working right were you left off, the work you were doing will be intact.
 
 ## Detached Worktree - Managing dotfiles
 
-By using bare repos and git worktrees you can separate the contents of the repo from the metadata itself. This means that the files can be in a folder, but the metadata in another one. This can be very useful for managing dotfiles.
+Bare repos and worktrees separate the contents of the repo from its metadata. This can be very useful for managing dotfiles.
 
-If you are like me, you probably store all your configuration files in a git repo (we spent too many hours configuring our systems for these files to be lost).
+If you are like me, you probably store all your configuration files in a git repo (we spent too many hours configuring our systems for these files to get lost). The problem is that the dotfiles must be placed inside the home folder, which kinda forces you to make you home folder a git repo, which something you probably don't want. 
 
-The problem is that the dotfiles must be placed inside the home folder, something like `~/.config/my_config.conf`. So how can we solve this? One can for example initialize a git repo inside of the home folder, but this causes countless issues. Many people use [GNU Stow](https://www.gnu.org/software/stow/) to symlink files from the dotfiles repo to the home folder.
+So how can we solve this?
 
-There is another way to manage your dotfiles:
+Many people use [GNU Stow](https://www.gnu.org/software/stow/) to symlink files from the dotfiles repo to the home folder, but there is another way:
 
 1. Clone your dotfiles repo as bare somewhere in the filesystem
 2. Checkout the worktree in your home folder
