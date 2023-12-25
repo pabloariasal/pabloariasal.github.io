@@ -5,13 +5,12 @@ title: Understanding Git Worktrees
 
 # Understanding Git Worktrees
 
-Last week I bought a Christmas tree. It's not the tallest, nor the bushiest, it even is kinda crooked, but it gets the work done. While carrying my new acquisition through the snowy streets, the comforting smell of freshly cut pine reminded me of how much I like trees, specially git worktrees.
+Last week I bought a Christmas tree. It's not the tallest, nor the bushiest, the tip is kinda crooked, but it gets the work done. While carrying my new acquisition through the snowy streets, the comforting smell of freshly cut pine reminded me of how much I like trees, specially git worktrees.
 
 Despite being very useful, `git worktree` remains an obscure and poorly understood git command. In this post I'll explain what git worktrees are and how they can greatly improve your git workflow, specially if you have to work on multiple branches at the same time.
 
-# What is a git worktree?
+# But, what is even a git worktree?
 
-We must start by answering a fundamental question: what is even a git worktree?
 Funny that you ask, you have been using git worktrees the whole time!
 
 If we clone a repo and inspect its contents:
@@ -225,6 +224,8 @@ A detailed explanation of how to achieve this can be found [here](https://www.at
 - A repo can have any number of worktrees (even zero)
 - Two different branches can be checked out in two different worktrees (in different folders)
 - A branch can only be checked out once for every repo
+
+Thank you for reading!
 
 # Discussion
 
