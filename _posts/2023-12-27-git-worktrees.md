@@ -231,4 +231,4 @@ Thank you for reading!
 
 # Discussion
 
-[![](/assets/img/reddit_large.png)](https://www.reddit.com)
+[![](/assets/img/reddit_large.png)](https://www.reddit.com/r/programming/comments/18s3gux/understanding_git_worktrees/)
