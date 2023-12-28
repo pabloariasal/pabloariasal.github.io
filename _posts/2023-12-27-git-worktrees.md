@@ -1,15 +1,18 @@
 ---
 layout: post
-title: Understanding Git Worktrees
+title: >
+  Boost Your Workflow: Exploring Git Worktrees
+image:
+  path:    /assets/img/posts/git_worktree/worktree.png
+  srcset:
+    960w: /assets/img/posts/git_worktree/worktree.png
+    480w: /assets/img/posts/git_worktree/worktree.png@0,5x.png
+    240w: /assets/img/posts/git_worktree/worktree.png@0,25x.png
 ---
 
-# Understanding Git Worktrees
+# Boost Your Workflow: Exploring Git Worktrees
 
 Last week I bought a Christmas tree. It's not the tallest, nor the bushiest, the tip is kinda crooked, but it gets the work done. While carrying my new acquisition through the snowy streets, the comforting smell of freshly cut pine reminded me of how much I like trees, specially git worktrees.
-
-<p align="center">
-<img src="/assets/img/posts/git_worktree/worktree.png" width="450" height="auto">
-</p>
 
 # But, what is even a git worktree?
 
